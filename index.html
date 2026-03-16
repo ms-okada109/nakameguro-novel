@@ -1,0 +1,544 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>中目黒 — 小説設計図</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@300;400;500;700&family=Noto+Sans+JP:wght@300;400;500&family=EB+Garamond:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
+<style>
+:root{--bg:#f7f4ef;--bg2:#efe9e0;--bg3:#e8dfd3;--ink:#1a1714;--ink2:#4a443d;--ink3:#8a807a;--accent:#7a4f2e;--gold:#a07840;--border:rgba(26,23,20,0.12);--serif:'Noto Serif JP','EB Garamond',serif;--sans:'Noto Sans JP',sans-serif}
+*{box-sizing:border-box;margin:0;padding:0}
+html{font-size:16px;scroll-behavior:smooth}
+body{background:var(--bg);color:var(--ink);font-family:var(--serif);min-height:100vh;line-height:1.8}
+
+header{position:relative;padding:56px 40px 36px;border-bottom:1px solid var(--border);overflow:hidden}
+header::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 80% 50%,rgba(122,79,46,0.07),transparent 60%),radial-gradient(ellipse at 20% 80%,rgba(61,107,90,0.05),transparent 50%);pointer-events:none}
+.header-inner{max-width:1100px;margin:0 auto;position:relative}
+.header-en{font-family:'EB Garamond',serif;font-size:11px;letter-spacing:.25em;color:var(--ink3);text-transform:uppercase;margin-bottom:10px}
+h1{font-size:clamp(2rem,4.5vw,3.2rem);font-weight:300;letter-spacing:.15em;line-height:1.2;margin-bottom:6px}
+h1 span{font-family:'EB Garamond',serif;font-style:italic;font-size:.52em;color:var(--ink3);display:block;letter-spacing:.1em;margin-top:4px}
+.header-meta{font-family:var(--sans);font-size:12px;color:var(--ink3);letter-spacing:.08em;margin-top:18px;display:flex;gap:20px;flex-wrap:wrap}
+.header-meta span::before{content:'—  '}
+
+nav{position:sticky;top:0;z-index:100;background:rgba(247,244,239,0.95);backdrop-filter:blur(8px);border-bottom:1px solid var(--border)}
+.nav-inner{max-width:1100px;margin:0 auto;padding:0 40px;display:flex;align-items:center;justify-content:space-between}
+.nav-tabs{display:flex}
+.nav-btn{padding:14px 18px;font-family:var(--sans);font-size:12px;letter-spacing:.1em;color:var(--ink3);background:none;border:none;border-bottom:2px solid transparent;cursor:pointer;transition:all .2s;white-space:nowrap}
+.nav-btn:hover{color:var(--ink)}
+.nav-btn.active{color:var(--accent);border-bottom-color:var(--accent)}
+.edit-toggle{font-family:var(--sans);font-size:11px;padding:6px 14px;border-radius:20px;border:1px solid var(--border);background:var(--bg);cursor:pointer;color:var(--ink3);letter-spacing:.08em;transition:all .2s}
+.edit-toggle.on{background:var(--accent);color:#fff;border-color:var(--accent)}
+
+main{max-width:1100px;margin:0 auto;padding:36px 40px 80px}
+.panel{display:none}.panel.active{display:block}
+.section-title{font-size:11px;font-family:var(--sans);letter-spacing:.2em;text-transform:uppercase;color:var(--ink3);margin-bottom:28px;display:flex;align-items:center;gap:16px}
+.section-title::after{content:'';flex:1;height:.5px;background:var(--border)}
+
+.rel-wrap{display:grid;grid-template-columns:1fr 320px;gap:24px;align-items:start}
+.svg-map-wrap{background:var(--bg2);border-radius:12px;border:1px solid var(--border);padding:16px;overflow:hidden}
+.svg-map-wrap svg{width:100%;display:block}
+.char-detail{background:var(--bg);border:1px solid var(--border);border-radius:12px;padding:22px;min-height:240px}
+.detail-placeholder{font-family:var(--sans);font-size:12px;color:var(--ink3);display:flex;align-items:center;justify-content:center;height:200px;text-align:center;line-height:2}
+.detail-name{font-size:17px;font-weight:500;letter-spacing:.1em;margin-bottom:3px}
+.detail-en{font-family:'EB Garamond',serif;font-style:italic;font-size:12px;color:var(--ink3);margin-bottom:12px}
+.detail-type{display:inline-block;font-family:var(--sans);font-size:10px;padding:3px 10px;border-radius:12px;margin-bottom:14px;letter-spacing:.08em}
+.detail-body{font-family:var(--sans);font-size:12.5px;line-height:1.9;color:var(--ink2)}
+.detail-body strong{font-weight:500;color:var(--ink)}
+.edit-textarea{width:100%;height:180px;font-family:var(--sans);font-size:12px;line-height:1.8;border:1px solid var(--border);border-radius:6px;padding:10px;background:var(--bg2);color:var(--ink);resize:vertical;margin-top:8px}
+.save-btn{margin-top:8px;padding:6px 16px;font-family:var(--sans);font-size:11px;background:var(--accent);color:#fff;border:none;border-radius:6px;cursor:pointer;letter-spacing:.08em}
+
+.chart-legend{display:flex;gap:20px;margin-bottom:16px;font-family:var(--sans);font-size:12px;color:var(--ink3);flex-wrap:wrap}
+.legend-item{display:flex;align-items:center;gap:8px}
+.legend-svg{width:28px;height:12px}
+.chart-wrap{background:var(--bg2);border-radius:12px;border:1px solid var(--border);padding:20px}
+.chart-info{background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:18px 22px;margin-top:16px;font-family:var(--sans);font-size:13px;line-height:1.9;color:var(--ink2);min-height:80px}
+.ch-title-small{font-family:var(--serif);font-size:15px;font-weight:500;color:var(--ink);margin-bottom:3px}
+.ch-pre-small{font-family:'EB Garamond',serif;font-style:italic;font-size:12px;color:var(--ink3);margin-bottom:8px}
+.chart-edit-panel{background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:16px 20px;margin-top:12px;display:none}
+.chart-edit-panel.visible{display:block}
+.chart-edit-panel label{font-family:var(--sans);font-size:12px;color:var(--ink2);display:block;margin-bottom:8px}
+.char-tabs{display:flex;gap:6px;margin-bottom:12px}
+.char-tab-btn{font-family:var(--sans);font-size:11px;padding:4px 12px;border-radius:16px;border:1px solid var(--border);background:var(--bg);cursor:pointer;color:var(--ink3)}
+.char-tab-btn.active{background:var(--accent);color:#fff;border-color:var(--accent)}
+
+.chapters-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:8px}
+.ch-card{background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:14px;cursor:pointer;transition:all .15s;position:relative;overflow:hidden}
+.ch-card::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--accent);opacity:0;transition:opacity .2s}
+.ch-card:hover{background:var(--bg2);transform:translateY(-1px)}
+.ch-card:hover::before{opacity:1}
+.ch-num{font-family:'EB Garamond',serif;font-size:11px;color:var(--ink3);letter-spacing:.1em;margin-bottom:3px}
+.ch-key{font-size:13px;font-weight:500;letter-spacing:.05em;margin-bottom:3px;color:var(--ink)}
+.ch-pre-text{font-family:var(--sans);font-size:10px;color:var(--ink3);margin-bottom:7px}
+.ch-status{display:inline-block;font-family:var(--sans);font-size:10px;padding:2px 8px;border-radius:8px;letter-spacing:.06em}
+.s-done{background:#e8f5e9;color:#2e7d32}.s-bone{background:#e3f2fd;color:#1565c0}
+.s-plot{background:#fff8e1;color:#b07800}.s-tbd{background:var(--bg3);color:var(--ink3)}
+
+.theme-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:28px}
+.theme-card{background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:18px 20px}
+.tc-title{font-size:11px;font-family:var(--sans);letter-spacing:.15em;text-transform:uppercase;color:var(--accent);margin-bottom:8px}
+.tc-body{font-family:var(--sans);font-size:12.5px;line-height:1.9;color:var(--ink2)}
+.quote-block{border-left:2px solid var(--gold);padding:14px 18px;margin:20px 0;background:var(--bg2);border-radius:0 8px 8px 0}
+.quote-block p{font-family:'EB Garamond',serif;font-style:italic;font-size:16px;color:var(--ink2)}
+.quote-block cite{display:block;font-family:var(--sans);font-size:11px;color:var(--ink3);margin-top:6px;letter-spacing:.1em}
+.finale-box{background:var(--ink);border-radius:12px;padding:28px 32px;margin-top:20px}
+.finale-box p{font-family:var(--sans);font-size:13px;line-height:2;color:rgba(247,244,239,.78);margin-bottom:12px}
+.finale-line{font-size:16px;font-weight:300;letter-spacing:.12em;color:#f7f4ef;margin-top:16px}
+
+.overlay{position:fixed;inset:0;background:rgba(26,23,20,.5);z-index:999;display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity .2s}
+.overlay.open{opacity:1;pointer-events:all}
+.modal{background:var(--bg);border-radius:14px;padding:28px 32px;max-width:480px;width:90%;max-height:80vh;overflow-y:auto;border:1px solid var(--border);position:relative}
+.modal-close{position:absolute;top:14px;right:18px;background:none;border:none;font-size:20px;cursor:pointer;color:var(--ink3);line-height:1}
+.modal-close:hover{color:var(--ink)}
+.modal-title{font-size:17px;font-weight:500;letter-spacing:.08em;margin-bottom:3px}
+.modal-sub{font-family:'EB Garamond',serif;font-style:italic;font-size:13px;color:var(--ink3);margin-bottom:14px}
+.modal-body-text{font-family:var(--sans);font-size:13px;line-height:1.95;color:var(--ink2)}
+.modal-body-text strong{font-weight:500;color:var(--ink)}
+.modal-edit-btn{margin-top:14px;padding:7px 18px;font-family:var(--sans);font-size:11px;background:none;border:1px solid var(--border);border-radius:6px;cursor:pointer;color:var(--ink3);letter-spacing:.08em;transition:all .2s}
+.modal-edit-btn:hover{background:var(--accent);color:#fff;border-color:var(--accent)}
+
+@media(max-width:768px){
+  header{padding:36px 20px 28px}main{padding:20px 20px 60px}
+  .nav-inner{padding:0 20px;flex-direction:column}
+  .nav-tabs{overflow-x:auto;width:100%}
+  .edit-toggle{margin:6px 0}
+  .rel-wrap{grid-template-columns:1fr}
+  .theme-grid{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-inner">
+    <div class="header-en">Novel Planning — Work in Progress</div>
+    <h1>中目黒<span>Nakameguro</span></h1>
+    <div class="header-meta">
+      <span>24章構成</span>
+      <span>ショパン 24のプレリュード</span>
+    </div>
+  </div>
+</header>
+
+<nav>
+  <div class="nav-inner">
+    <div class="nav-tabs">
+      <button class="nav-btn active" onclick="switchTab('rel')">登場人物と関係図</button>
+      <button class="nav-btn" onclick="switchTab('cons')">自意識の変化</button>
+      <button class="nav-btn" onclick="switchTab('chapters')">章一覧</button>
+      <button class="nav-btn" onclick="switchTab('theme')">主題メモ</button>
+    </div>
+    <button class="edit-toggle" id="editToggle" onclick="toggleEdit()">編集モード</button>
+  </div>
+</nav>
+
+<main>
+
+<!-- 関係図 -->
+<div id="rel" class="panel active">
+  <div class="section-title">登場人物と関係図</div>
+  <div class="rel-wrap">
+    <div class="svg-map-wrap">
+      <svg id="relSvg" viewBox="0 0 660 430" preserveAspectRatio="xMidYMid meet">
+        <defs>
+          <marker id="arr" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+            <path d="M2 1L8 5L2 9" fill="none" stroke="context-stroke" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </marker>
+        </defs>
+
+        <!-- Maya → Keitaro: 憧れ→醒め（Mayaの右端→Keitaroの左端） -->
+        <line x1="230" y1="100" x2="252" y2="195" stroke="#2e4a7a" stroke-width="1.4" marker-end="url(#arr)" opacity=".8"/>
+        <text x="210" y="150" text-anchor="middle" font-size="9.5" font-family="'Noto Sans JP',sans-serif" fill="#2e4a7a">憧れ→醒め</text>
+
+        <!-- Keitaro → Riko: 気づき（遅）（Keitaroの左下→Rikoの右上） -->
+        <line x1="278" y1="250" x2="200" y2="310" stroke="#3d6b5a" stroke-width="1.4" marker-end="url(#arr)" opacity=".8"/>
+        <text x="208" y="288" text-anchor="middle" font-size="9.5" font-family="'Noto Sans JP',sans-serif" fill="#3d6b5a">気づき（遅）</text>
+
+        <!-- Maya → Jigyo: 資本・依存（Keitaro箱の上をアーク） -->
+        <path d="M230,84 C330,18 465,18 496,168" fill="none" stroke="#a07840" stroke-width="1.2" stroke-dasharray="5 3.5" marker-end="url(#arr)" opacity=".75"/>
+        <text x="360" y="20" text-anchor="middle" font-size="9.5" font-family="'Noto Sans JP',sans-serif" fill="#a07840">資本・依存</text>
+
+        <!-- Tetsuya → Riko: 無自覚な好意（Keitaro箱の下を水平） -->
+        <line x1="446" y1="332" x2="212" y2="348" stroke="#7a4f2e" stroke-width="1.2" stroke-dasharray="4 3" marker-end="url(#arr)" opacity=".7"/>
+        <text x="330" y="328" text-anchor="middle" font-size="9.5" font-family="'Noto Sans JP',sans-serif" fill="#7a4f2e">無自覚な好意</text>
+
+        <!-- Keiko → Keitaro: 照射する存在 -->
+        <line x1="510" y1="90" x2="420" y2="178" stroke="#4a443d" stroke-width="1.1" stroke-dasharray="4 3" marker-end="url(#arr)" opacity=".65"/>
+        <text x="490" y="122" text-anchor="middle" font-size="9.5" font-family="'Noto Sans JP',sans-serif" fill="#4a443d">照射する存在</text>
+
+        <!-- Keitaro → Tetsuya: 友人（Keitaro右→Tetsuya左、Jigyo箱の外側を通る） -->
+        <line x1="422" y1="216" x2="446" y2="310" stroke="#8a807a" stroke-width="1" stroke-dasharray="3 3" opacity=".55" marker-end="url(#arr)"/>
+        <text x="450" y="264" text-anchor="start" font-size="9.5" font-family="'Noto Sans JP',sans-serif" fill="#8a807a" opacity=".8">友人</text>
+
+        <!-- ノード: Keitaro (中央) -->
+        <g style="cursor:pointer" onclick="showChar('keitaro')">
+          <rect x="252" y="178" width="170" height="82" rx="9" fill="#f7f4ef" stroke="#2e4a7a" stroke-width="1.6"/>
+          <foreignObject x="252" y="178" width="170" height="82">
+            <div xmlns="http://www.w3.org/1999/xhtml" style="width:170px;height:82px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;padding:6px;text-align:center">
+              <div style="font-size:13px;font-weight:500;font-family:'Noto Serif JP',serif;color:#1a1714;letter-spacing:.05em">津田敬太郎</div>
+              <div style="font-size:10px;font-family:'Noto Sans JP',sans-serif;color:#8a807a">東大国文・ピアニスト</div>
+              <div style="font-size:9px;font-family:'Noto Sans JP',sans-serif;background:#e8eef8;color:#2e4a7a;padding:2px 9px;border-radius:9px;margin-top:3px">降りられない客席</div>
+            </div>
+          </foreignObject>
+        </g>
+
+        <!-- ノード: Maya (左上) -->
+        <g style="cursor:pointer" onclick="showChar('maya')">
+          <rect x="68" y="58" width="162" height="82" rx="9" fill="#f7f4ef" stroke="#a07840" stroke-width="1.6"/>
+          <foreignObject x="68" y="58" width="162" height="82">
+            <div xmlns="http://www.w3.org/1999/xhtml" style="width:162px;height:82px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;padding:6px;text-align:center">
+              <div style="font-size:13px;font-weight:500;font-family:'Noto Serif JP',serif;color:#1a1714;letter-spacing:.05em">摩耶</div>
+              <div style="font-size:10px;font-family:'Noto Sans JP',sans-serif;color:#8a807a">バイオリニスト・27歳</div>
+              <div style="font-size:9px;font-family:'Noto Sans JP',sans-serif;background:#fdf5e6;color:#a07840;padding:2px 9px;border-radius:9px;margin-top:3px">反射する自意識</div>
+            </div>
+          </foreignObject>
+        </g>
+
+        <!-- ノード: Riko (左下) -->
+        <g style="cursor:pointer" onclick="showChar('riko')">
+          <rect x="48" y="308" width="164" height="82" rx="9" fill="#f7f4ef" stroke="#3d6b5a" stroke-width="1.6"/>
+          <foreignObject x="48" y="308" width="164" height="82">
+            <div xmlns="http://www.w3.org/1999/xhtml" style="width:164px;height:82px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;padding:6px;text-align:center">
+              <div style="font-size:13px;font-weight:500;font-family:'Noto Serif JP',serif;color:#1a1714;letter-spacing:.05em">橋本莉子</div>
+              <div style="font-size:10px;font-family:'Noto Sans JP',sans-serif;color:#8a807a">東大国文・官僚志望</div>
+              <div style="font-size:9px;font-family:'Noto Sans JP',sans-serif;background:#e6f2ed;color:#3d6b5a;padding:2px 9px;border-radius:9px;margin-top:3px">陥没した自意識</div>
+            </div>
+          </foreignObject>
+        </g>
+
+        <!-- ノード: Tetsuya (右下) -->
+        <g style="cursor:pointer" onclick="showChar('tetsuya')">
+          <rect x="446" y="290" width="164" height="82" rx="9" fill="#f7f4ef" stroke="#7a4f2e" stroke-width="1.6"/>
+          <foreignObject x="446" y="290" width="164" height="82">
+            <div xmlns="http://www.w3.org/1999/xhtml" style="width:164px;height:82px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;padding:6px;text-align:center">
+              <div style="font-size:13px;font-weight:500;font-family:'Noto Serif JP',serif;color:#1a1714;letter-spacing:.05em">宇野哲也</div>
+              <div style="font-size:10px;font-family:'Noto Sans JP',sans-serif;color:#8a807a">春本研究・院進志望</div>
+              <div style="font-size:9px;font-family:'Noto Sans JP',sans-serif;background:#f5ede6;color:#7a4f2e;padding:2px 9px;border-radius:9px;margin-top:3px">自意識を持たない</div>
+            </div>
+          </foreignObject>
+        </g>
+
+        <!-- ノード: Keiko (右上) -->
+        <g style="cursor:pointer" onclick="showChar('keiko')">
+          <rect x="458" y="25" width="162" height="65" rx="9" fill="#f7f4ef" stroke="#4a443d" stroke-width="1.2"/>
+          <foreignObject x="458" y="25" width="162" height="65">
+            <div xmlns="http://www.w3.org/1999/xhtml" style="width:162px;height:65px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;padding:6px;text-align:center">
+              <div style="font-size:12px;font-weight:500;font-family:'Noto Serif JP',serif;color:#1a1714;letter-spacing:.05em">圭子先生</div>
+              <div style="font-size:10px;font-family:'Noto Sans JP',sans-serif;color:#8a807a">東京音大・72歳</div>
+              <div style="font-size:9px;font-family:'Noto Sans JP',sans-serif;background:#eeecea;color:#4a443d;padding:2px 9px;border-radius:9px;margin-top:3px">照射する存在</div>
+            </div>
+          </foreignObject>
+        </g>
+
+        <!-- ノード: Jigyo (右中) -->
+        <g style="cursor:pointer" onclick="showChar('jigyo')">
+          <rect x="474" y="168" width="152" height="62" rx="9" fill="#f7f4ef" stroke="#a07840" stroke-width="1.1" stroke-dasharray="5 2" opacity=".85"/>
+          <foreignObject x="474" y="168" width="152" height="62">
+            <div xmlns="http://www.w3.org/1999/xhtml" style="width:152px;height:62px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;padding:6px;text-align:center">
+              <div style="font-size:12px;font-weight:500;font-family:'Noto Serif JP',serif;color:#1a1714;letter-spacing:.05em">事業家</div>
+              <div style="font-size:10px;font-family:'Noto Sans JP',sans-serif;color:#8a807a">摩耶のパトロン</div>
+              <div style="font-size:9px;font-family:'Noto Sans JP',sans-serif;background:#fdf5e6;color:#a07840;padding:2px 9px;border-radius:9px;margin-top:3px">資本の象徴</div>
+            </div>
+          </foreignObject>
+        </g>
+      </svg>
+    </div>
+
+    <div class="char-detail" id="charDetail">
+      <div class="detail-placeholder">人物をクリックすると<br>詳細が表示されます<br><br><span style="font-size:10px;opacity:.6">編集モード ON で内容を変更できます</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- 自意識チャート -->
+<div id="cons" class="panel">
+  <div class="section-title">自意識の変化　— 24章を通じて</div>
+  <div class="chart-legend">
+    <div class="legend-item">
+      <svg class="legend-svg" viewBox="0 0 28 12"><line x1="0" y1="6" x2="28" y2="6" stroke="#2e4a7a" stroke-width="2"/><circle cx="14" cy="6" r="3" fill="#2e4a7a"/></svg>
+      津田敬太郎
+    </div>
+    <div class="legend-item">
+      <svg class="legend-svg" viewBox="0 0 28 12"><line x1="0" y1="6" x2="28" y2="6" stroke="#a07840" stroke-width="2" stroke-dasharray="5 3"/><circle cx="14" cy="6" r="3" fill="#a07840"/></svg>
+      摩耶（破線）
+    </div>
+    <div class="legend-item">
+      <svg class="legend-svg" viewBox="0 0 28 12"><line x1="0" y1="6" x2="28" y2="6" stroke="#3d6b5a" stroke-width="2" stroke-dasharray="2 3"/><circle cx="14" cy="6" r="3" fill="#3d6b5a"/></svg>
+      橋本莉子（点線）
+    </div>
+    <span style="margin-left:auto;font-family:var(--sans);font-size:11px;color:var(--ink3)">縦軸：自意識の気づき度</span>
+  </div>
+  <div class="chart-wrap">
+    <canvas id="consChart" height="300"></canvas>
+  </div>
+  <div class="chart-info" id="chartInfo">グラフのプロット点をクリックすると章の概要が表示されます</div>
+  <div class="chart-edit-panel" id="chartEditPanel">
+    <div style="font-family:var(--sans);font-size:11px;color:var(--ink3);margin-bottom:10px">プロット点をクリック → キャラクターを選んでスライダーで値を変更 → 保存</div>
+    <div class="char-tabs" id="charTabs">
+      <button class="char-tab-btn active" onclick="setEditChar('k',this)">敬太郎</button>
+      <button class="char-tab-btn" onclick="setEditChar('m',this)">摩耶</button>
+      <button class="char-tab-btn" onclick="setEditChar('r',this)">莉子</button>
+    </div>
+    <label id="editSliderLabel">章を選択してください</label>
+    <input type="range" id="editSlider" min="0" max="6" step="0.5" value="3" style="width:100%;margin-bottom:8px" oninput="onSliderChange(this.value)">
+    <button class="save-btn" onclick="saveChartValue()">この値を保存</button>
+  </div>
+</div>
+
+<!-- 章一覧 -->
+<div id="chapters" class="panel">
+  <div class="section-title">24章　構成一覧</div>
+  <div class="chapters-grid" id="chaptersGrid"></div>
+</div>
+
+<!-- 主題メモ -->
+<div id="theme" class="panel">
+  <div class="section-title">主題と設計思想</div>
+  <div class="theme-grid">
+    <div class="theme-card">
+      <div class="tc-title">文学的系譜</div>
+      <div class="tc-body">漱石『彼岸過迄』の敬太郎を命名の起点としながら、自意識の構造は大きく異なる。<br><br>トーニオ・クレーガー（マン）との深い共鳴——市民的なものへの愛が芸術家の使命を形作る、という逆説が本作の骨格。</div>
+    </div>
+    <div class="theme-card">
+      <div class="tc-title">音楽構造</div>
+      <div class="tc-body">ショパン「24のプレリュード」に24章を対応させる。プレリュードは「前奏曲」——前置きでありながらそれ自体が完結している。<br><br>第24章：プレリュード24番（ニ短調）とモーツァルト協奏曲第20番（ニ短調）が重なる。</div>
+    </div>
+    <div class="theme-card">
+      <div class="tc-title">主題：「にもかかわらず」</div>
+      <div class="tc-body">純粋な舞台はどこにもない。コンクールも資本主義の装置。摩耶の誠実さも借り物の上にある。それでも鍵盤の前に座っている——矛盾を抱えたまま動くことが唯一の誠実さ。</div>
+    </div>
+    <div class="theme-card">
+      <div class="tc-title">鏡構造</div>
+      <div class="tc-body">敬太郎の地獄は「見えすぎること」。莉子の地獄は「信じられないこと」。<br><br>見えすぎる人間が、批評眼の外側にいる人間と出会う——その瞬間、敬太郎の客席が少し揺らぐ。</div>
+    </div>
+  </div>
+  <div class="quote-block">
+    <p>"市民的なものへの愛が、芸術家としての使命を形作っている"</p>
+    <cite>— トーマス・マン「トーニオ・クレーガー」</cite>
+  </div>
+  <div class="finale-box">
+    <p>コンクールのファイナル。モーツァルト・ピアノ協奏曲第20番、ニ短調。</p>
+    <p>長いオーケストラの序奏を鍵盤の前で聴きながら、敬太郎はまた動機を見失いつつあった。本番直前、ロビーで莉子の姿を認めた「気がした」。確かめない。確かめに行けない。</p>
+    <p>そして自分のパートが来て、一瞬の静寂ののち——</p>
+    <div class="finale-line">氷のように冷たい一音を落とした。</div>
+  </div>
+</div>
+</main>
+
+<!-- 章モーダル -->
+<div class="overlay" id="chOverlay" onclick="closeChModal(event)">
+  <div class="modal">
+    <button class="modal-close" onclick="closeChModal()">×</button>
+    <div class="modal-title" id="chModalTitle"></div>
+    <div class="modal-sub" id="chModalSub"></div>
+    <div class="modal-body-text" id="chModalBody"></div>
+    <div id="chEditArea" style="display:none;margin-top:12px">
+      <textarea class="edit-textarea" id="chEditTextarea" rows="5"></textarea>
+      <button class="save-btn" onclick="saveChapter()">保存</button>
+    </div>
+    <button class="modal-edit-btn" id="chEditBtn" onclick="openChEdit()" style="display:none">内容を編集</button>
+  </div>
+</div>
+
+<script>
+const LS={get:k=>{try{return JSON.parse(localStorage.getItem('nakameguro_'+k))}catch(e){return null}},set:(k,v)=>{try{localStorage.setItem('nakameguro_'+k,JSON.stringify(v))}catch(e){}}};
+
+const CD={
+  keitaro:{name:'津田敬太郎',en:'Keitaro Tsuda',typeColor:'#e8eef8',typeText:'#2e4a7a',type:'降りられない客席',body:'<strong>自意識の型：降りられない客席</strong><br>批評眼が先行し、何かに踏み出す前に踏み出した自分を外から見てしまう。ピアノをアイデンティティにしたいが「それをするとダサい」とわかっている。<br><br>演奏中だけ批評眼が止まる——自意識が一時的に死ぬ体験を知ってしまったから手放せない。<br><br><strong>モデル：</strong>漱石の敬太郎（命名の起点）＋トーニオ・クレーガー。'},
+  maya:{name:'摩耶',en:'Maya',typeColor:'#fdf5e6',typeText:'#a07840',type:'反射する自意識',body:'<strong>自意識の型：反射する自意識</strong><br>資本家という光源を浴びて輝く。音楽への誠実さは本物だが、その誠実さを支える環境（防音マンション、5億のストラディバリウス）が自分のものではない。<br><br><strong>核心：</strong>事業家との婚約を選ぶことに苦しんでいる。摩耶の苦しみが敬太郎には見えない。'},
+  riko:{name:'橋本莉子',en:'Riko Hashimoto',typeColor:'#e6f2ed',typeText:'#3d6b5a',type:'陥没した自意識',body:'<strong>自意識の型：陥没した自意識</strong><br>「私なんて」という劣等感が地中に埋まっている。ちやほやされると否定が入る。高校3年で母を亡くし、浪人を経て入学。<br><br><strong>核心：</strong>コンクールに来ること——自己否定を一日だけ黙らせて来る。これが莉子の最大の能動性。'},
+  tetsuya:{name:'宇野哲也',en:'Tetsuya Uno',typeColor:'#f5ede6',typeText:'#7a4f2e',type:'自意識を持たない',body:'<strong>自意識の型：自意識を持たない</strong><br>感情を検分しない。自分が何者かを疑わない。実家（今治のタオル工場）の経済的安定が背景にある。<br><br><strong>機能：</strong>莉子への無自覚な好意が、敬太郎への正論の形をとった非難として出てくる。'},
+  keiko:{name:'斉藤圭子先生',en:'Keiko Saito',typeColor:'#eeecea',typeText:'#4a443d',type:'照射する存在',body:'<strong>機能：存在として照射する</strong><br>かつてコンクールで挫折した人間——その過去は語られないが、敬太郎の矛盾と静かに響き合う。<br><br>「落ちて当然よ」——優しくないが嘘もつかない。バイオリンのチケットを手渡すことで物語全体を動かす。'},
+  jigyo:{name:'事業家',en:'The Businessman',typeColor:'#fdf5e6',typeText:'#a07840',type:'資本の象徴',body:'<strong>直接登場しない構造的な存在</strong><br>物語に顔を出さないが構造全体を規定している。<br><br>摩耶が婚約を受け入れることで、敬太郎は「誠実であることと自由であることが同時に成立しない構造」に絶望する。'}
+};
+
+const CHD=[
+  {n:1,key:'喪失・出発',pre:'プレリュード 1番　ハ長調',body:'寮のピアノでショパンのプレリュードを弾く。軽トラの老人「ハック（ファック）して死ぬだけ」——批評眼を持つ敬太郎の自意識への無自覚な解体。中目黒へ出発。',st:'done'},
+  {n:2,key:'空白・静止',pre:'プレリュード 2番　イ短調',body:'4月末。地面に落ちた桜の花びらが重く雨に沈む。電気の通っていない部屋で何もしない敬太郎。部屋だけが呼吸している。',st:'bone'},
+  {n:3,key:'出会い・莉子',pre:'プレリュード 3番　嬰ト長調',body:'目黒川沿いを哲也・莉子と歩く。荷解きを手伝ってもらう。楽譜の書き込みを莉子が読み上げる。「私は聴きたいけどなあ」の沈黙。',st:'done'},
+  {n:4,key:'圭子先生',pre:'プレリュード 4番　ホ短調',body:'食堂での哲也との会話。圭子先生宅訪問——ピアノをやめる旨を告げる。「落ちて当然よ」。バイオリンのコンサートチケットを渡される。ver.3（圭子視点）が最良。',st:'bone'},
+  {n:5,key:'都市・消費',pre:'プレリュード 5番　ニ長調',body:'中目黒の街を歩く。莉子の家のある坂を登る。代官山へ——朔太郎「坂」の引用。洗練されつつある自分への高揚、まだ無自覚。',st:'bone'},
+  {n:6,key:'喫茶店・波乱',pre:'プレリュード 6番　ロ短調',body:'試験前。正門前の喫茶店で三人。敬太郎がコンサートのチケットを取り出す。哲也は断る。莉子が行くと答える——三角形に最初の歪み。',st:'done'},
+  {n:7,key:'踊り場',pre:'プレリュード 7番　イ長調',body:'本郷の通りに出る敬太郎と莉子。「津田が弾くの？」水たまりを避けながら近づいたり遠ざかったり。春でも夏でもない生ぬるい風。',st:'done'},
+  {n:8,key:'摩耶・チャルダッシュ',pre:'プレリュード 8番　嬰ヘ短調',body:'コンサートのロビー。伴奏者が帰ってしまい急遽チャルダッシュを演奏。「天井の高いところに音が届いた」——批評眼が止まる最初の瞬間。',st:'done'},
+  {n:9,key:'タクシー',pre:'プレリュード 9番　ホ長調',body:'タクシーでブランケットに隠れる敬太郎。「歌詞のない歌だと思っているわ」——二人の音楽観の対比が鮮明になる。',st:'done'},
+  {n:10,key:'バー・言葉遊び',pre:'プレリュード 10番　嬰ハ短調',body:'商店街のバー。「ゲームだよクラシックなんて」摩耶の音楽論。月15万で伴奏の依頼。敬太郎が承諾。',st:'done'},
+  {n:11,key:'三人・疚しさ',pre:'プレリュード 11番　ロ長調',body:'試験後の喫茶店。「見つからないように隠しておきながら、その実見つかってほしいと願うような疚しさ」——敬太郎の自意識の核心が初めて言語化される。',st:'done'},
+  {n:12,key:'練習',pre:'プレリュード 12番　嬰ト短調',body:'摩耶との練習。「ここで私の心がちぎれるの、わかる」——摩耶の音楽への誠実さ。夏に2公演。敬太郎のピアノが戻ってくる。',st:'done'},
+  {n:13,key:'舟歌・ハイライト',pre:'プレリュード 13番　嬰ヘ長調',body:'「狂気的に私を好きになってくれる人」。月の差し込む夜、ショパンの舟歌を二人で弾く。中間部の転調で何かが変わる。弾き終わった後の沈黙。',st:'plot'},
+  {n:14,key:'激情・宙吊り',pre:'プレリュード 14番　変ホ短調',body:'「実はひとつ言わないといけないことがあるの」——受け入れながらその言葉を発する摩耶。内容は言わない。言葉が宙吊りのまま二人が流れていく。',st:'plot'},
+  {n:15,key:'陰鬱・変化',pre:'プレリュード 15番　変ニ長調（雨だれ）',body:'章の最初と最後で同じ場面——でも中身は変わっている。あの言葉が二人の間に漂い続ける。敬太郎は聞かない、摩耶は言わない。',st:'plot'},
+  {n:16,key:'別れ・嵐',pre:'プレリュード 16番　変ロ短調',body:'摩耶から事業家との婚約を告げられる。敬太郎の激情は内側に向かう。摩耶も苦しんでいるが、それが敬太郎には見えない。',st:'plot'},
+  {n:17,key:'空白・上野',pre:'プレリュード 17番　変イ長調',body:'別れの後。上野公園。へたくそなバイオリンの大道芸人——摩耶との対比。東京文化会館のカフェ。敬太郎が一人でいる章。',st:'bone'},
+  {n:18,key:'莉子・近景',pre:'プレリュード 18番　ヘ短調',body:'摩耶が去った後の剥がれた状態で、莉子の輪郭が初めてはっきり見える。',st:'tbd'},
+  {n:19,key:'コンクールへ',pre:'プレリュード 19番　変ホ長調',body:'（未定）',st:'tbd'},
+  {n:20,key:'莉子の言葉',pre:'プレリュード 20番　ハ短調',body:'「私はあなたのピアノが好きだ」——莉子の告白に近い場面。敬太郎がコンクールに出ることを決める。',st:'plot'},
+  {n:21,key:'（未定）',pre:'プレリュード 21番　変ロ長調',body:'（未定）',st:'tbd'},
+  {n:22,key:'（未定）',pre:'プレリュード 22番　ト短調',body:'（未定）',st:'tbd'},
+  {n:23,key:'ポスター',pre:'プレリュード 23番　ヘ長調',body:'大学の掲示板にコンクールのポスター。莉子が前を通る。説明しない——存在だけを一文置く。読者が最後に遡って回収する伏線。',st:'plot'},
+  {n:24,key:'ファイナル',pre:'プレリュード 24番　ニ短調',body:'コンクールのファイナル。モーツァルト・ピアノ協奏曲第20番（ニ短調）。ロビーで莉子の姿を認めた「気がした」。一瞬の静寂ののち——氷のように冷たい一音を落とした。',st:'plot'},
+];
+
+// 摩耶と敬太郎の値を分離（摩耶を0.3-0.4オフセット）
+const CHART_DEFAULT={
+  k:[1,1,2,2,2,2,2,4,4,4,4,5,5,5,4,3,2,3,3,4,4,4,4,5],
+  m:[null,null,null,null,null,null,null,3.6,3.6,3.6,3.6,4.7,4.8,5.2,4.2,1.7,null,null,null,null,null,null,null,null],
+  r:[2,2,2,2,2,3,3,null,null,null,3,null,null,null,null,null,null,4,4,5,5,5,5,null]
+};
+
+let CHARS=LS.get('chars')||JSON.parse(JSON.stringify(CD));
+let CHAPTERS=LS.get('chapters')||JSON.parse(JSON.stringify(CHD));
+let chartData=LS.get('chart')||JSON.parse(JSON.stringify(CHART_DEFAULT));
+
+let editMode=false,currentChar=null,chartInstance=null,editChartChar='k',editChartIdx=null;
+
+function toggleEdit(){
+  editMode=!editMode;
+  document.getElementById('editToggle').classList.toggle('on',editMode);
+  document.getElementById('editToggle').textContent=editMode?'編集中 ✕':'編集モード';
+  document.getElementById('chartEditPanel').classList.toggle('visible',editMode);
+  if(currentChar)renderCharDetail(currentChar);
+}
+
+function switchTab(id){
+  document.querySelectorAll('.nav-btn').forEach((b,i)=>b.classList.toggle('active',['rel','cons','chapters','theme'][i]===id));
+  document.querySelectorAll('.panel').forEach(p=>p.classList.toggle('active',p.id===id));
+  if(id==='cons')initChart();
+  if(id==='chapters')initChapters();
+}
+
+function showChar(id){
+  currentChar=id;
+  renderCharDetail(id);
+}
+
+function renderCharDetail(id){
+  const c=CHARS[id];
+  const el=document.getElementById('charDetail');
+  if(editMode){
+    el.innerHTML=`<div class="detail-name">${c.name}</div><div class="detail-en">${c.en}</div><span class="detail-type" style="background:${c.typeColor};color:${c.typeText}">${c.type}</span><div style="font-family:var(--sans);font-size:11px;color:var(--ink3);margin-bottom:4px">説明を編集（HTMLタグ使用可）</div><textarea class="edit-textarea" id="charEditArea">${c.body}</textarea><button class="save-btn" onclick="saveCharBody('${id}')">保存</button>`;
+  }else{
+    el.innerHTML=`<div class="detail-name">${c.name}</div><div class="detail-en">${c.en}</div><span class="detail-type" style="background:${c.typeColor};color:${c.typeText}">${c.type}</span><div class="detail-body">${c.body}</div>`;
+  }
+}
+
+function saveCharBody(id){
+  CHARS[id].body=document.getElementById('charEditArea').value;
+  LS.set('chars',CHARS);
+  renderCharDetail(id);
+}
+
+let chartInited=false;
+function initChart(){
+  if(chartInited)return;
+  chartInited=true;
+  const labels=Array.from({length:24},(_,i)=>i+1);
+  const ctx=document.getElementById('consChart').getContext('2d');
+  chartInstance=new Chart(ctx,{
+    type:'line',
+    data:{labels,datasets:[
+      {label:'敬太郎',data:chartData.k,borderColor:'#2e4a7a',backgroundColor:'rgba(46,74,122,0.06)',pointBackgroundColor:'#2e4a7a',pointRadius:5,pointHoverRadius:7,tension:.35,spanGaps:false,borderWidth:2.5},
+      {label:'摩耶',data:chartData.m,borderColor:'#a07840',backgroundColor:'rgba(160,120,64,0.06)',pointBackgroundColor:'#a07840',pointRadius:5,pointHoverRadius:7,tension:.35,spanGaps:false,borderDash:[7,4],borderWidth:2},
+      {label:'莉子',data:chartData.r,borderColor:'#3d6b5a',backgroundColor:'rgba(61,107,90,0.06)',pointBackgroundColor:'#3d6b5a',pointRadius:5,pointHoverRadius:7,tension:.35,spanGaps:false,borderDash:[2,4],borderWidth:2},
+    ]},
+    options:{
+      responsive:true,
+      onClick:(_,els)=>{
+        if(!els.length)return;
+        const idx=els[0].index;
+        const ch=CHAPTERS[idx];
+        document.getElementById('chartInfo').innerHTML=`<div class="ch-title-small">第${ch.n}章　${ch.key}</div><div class="ch-pre-small">${ch.pre}</div>${ch.body}`;
+        if(editMode){editChartIdx=idx;updateEditSlider();}
+      },
+      plugins:{legend:{display:false},tooltip:{callbacks:{title:i=>`第${i[0].label}章`}}},
+      scales:{
+        x:{grid:{color:'rgba(26,23,20,0.06)'},ticks:{color:'#8a807a',font:{size:11,family:'Noto Sans JP'}},title:{display:true,text:'章',color:'#8a807a',font:{size:11}}},
+        y:{min:0,max:6,grid:{color:'rgba(26,23,20,0.06)'},ticks:{color:'#8a807a',font:{size:11},stepSize:1,callback:v=>['','低','','中','','高',''][v]||''},title:{display:true,text:'自意識の気づき度',color:'#8a807a',font:{size:11}}}
+      }
+    }
+  });
+}
+
+function setEditChar(c,btn){
+  editChartChar=c;
+  document.querySelectorAll('.char-tab-btn').forEach(b=>b.classList.toggle('active',b===btn));
+  updateEditSlider();
+}
+
+function updateEditSlider(){
+  if(editChartIdx===null)return;
+  const val=chartData[editChartChar][editChartIdx];
+  const names={k:'敬太郎',m:'摩耶',r:'莉子'};
+  document.getElementById('editSlider').value=val??0;
+  document.getElementById('editSliderLabel').textContent=`第${editChartIdx+1}章 / ${names[editChartChar]}　現在: ${val??'未設定'}`;
+}
+
+function onSliderChange(v){
+  if(editChartIdx===null)return;
+  const names={k:'敬太郎',m:'摩耶',r:'莉子'};
+  document.getElementById('editSliderLabel').textContent=`第${editChartIdx+1}章 / ${names[editChartChar]}　設定値: ${v}`;
+}
+
+function saveChartValue(){
+  if(editChartIdx===null)return;
+  const v=parseFloat(document.getElementById('editSlider').value);
+  chartData[editChartChar][editChartIdx]=v;
+  LS.set('chart',chartData);
+  const di={k:0,m:1,r:2}[editChartChar];
+  chartInstance.data.datasets[di].data[editChartIdx]=v;
+  chartInstance.update('none');
+  document.getElementById('editSliderLabel').textContent=`第${editChartIdx+1}章 / {{保存済み}} 値: ${v}`.replace('{{保存済み}}','保存済み ✓');
+}
+
+let chapInited=false;
+function initChapters(){
+  if(chapInited){refreshChapters();return;}
+  chapInited=true;refreshChapters();
+}
+
+function refreshChapters(){
+  const g=document.getElementById('chaptersGrid');g.innerHTML='';
+  const L={done:'執筆中',bone:'骨子あり',plot:'プロット案',tbd:'未定'};
+  CHAPTERS.forEach((ch,i)=>{
+    const d=document.createElement('div');d.className='ch-card';
+    d.innerHTML=`<div class="ch-num">第 ${ch.n} 章</div><div class="ch-key">${ch.key}</div><div class="ch-pre-text">${ch.pre}</div><span class="ch-status s-${ch.st}">${L[ch.st]}</span>`;
+    d.onclick=()=>openChModal(i);g.appendChild(d);
+  });
+}
+
+let editingChIdx=null;
+function openChModal(i){
+  editingChIdx=i;const ch=CHAPTERS[i];
+  document.getElementById('chModalTitle').textContent=`第${ch.n}章　${ch.key}`;
+  document.getElementById('chModalSub').textContent=ch.pre;
+  document.getElementById('chModalBody').innerHTML=ch.body;
+  document.getElementById('chEditArea').style.display='none';
+  document.getElementById('chEditBtn').style.display=editMode?'inline-block':'none';
+  document.getElementById('chOverlay').classList.add('open');
+}
+
+function openChEdit(){
+  document.getElementById('chEditTextarea').value=CHAPTERS[editingChIdx].body;
+  document.getElementById('chEditArea').style.display='block';
+  document.getElementById('chEditBtn').style.display='none';
+}
+
+function saveChapter(){
+  const v=document.getElementById('chEditTextarea').value;
+  CHAPTERS[editingChIdx].body=v;
+  LS.set('chapters',CHAPTERS);
+  document.getElementById('chModalBody').innerHTML=v;
+  document.getElementById('chEditArea').style.display='none';
+  document.getElementById('chEditBtn').style.display='inline-block';
+  refreshChapters();
+}
+
+function closeChModal(e){
+  if(!e||e.target===document.getElementById('chOverlay'))
+    document.getElementById('chOverlay').classList.remove('open');
+}
+
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeChModal();});
+</script>
+</body>
+</html>
