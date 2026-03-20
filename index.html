@@ -1396,9 +1396,7 @@ function toast(msg){
 
 // Init
 // Gist設定復元
-const _gt=localStorage.getItem("nm_gist_token");
-const _gi=localStorage.getItem("nm_gist_id");
-if(_gt&&_gi)document.getElementById("syncBtn").title=`Gist: ${_gi.slice(0,8)}...`;
+// Gist設定は openSyncModal時に復元されるため初期化不要
 renderArrows();
 renderSvgNodes();
 renderExtraChars();
