@@ -154,7 +154,7 @@ label.field-label{display:block;font-family:var(--sans);font-size:11px;color:var
 .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
 
 
-.write-layout{display:grid;grid-template-columns:210px 1fr;gap:0;height:calc(100vh - 220px);min-height:560px;border:1px solid var(--border);border-radius:10px;overflow:hidden}
+.write-layout{display:grid;grid-template-columns:210px 1fr;gap:0;height:calc(100vh - 160px);min-height:560px;border:1px solid var(--border);border-radius:10px;overflow:hidden}
 .write-sidebar{border-right:1px solid var(--border);overflow-y:auto;background:var(--bg2)}
 .write-sidebar-hd{padding:12px 16px;border-bottom:1px solid var(--border);font-family:var(--sans);font-size:10px;color:var(--ink3);letter-spacing:.15em;text-transform:uppercase}
 .wci{padding:9px 14px;cursor:pointer;border-bottom:.5px solid var(--border);transition:background .15s}
@@ -188,10 +188,19 @@ label.field-label{display:block;font-family:var(--sans);font-size:11px;color:var
 .extra-char-del:hover{color:#c0392b}
 
 @media(max-width:768px){
-  header{padding:32px 20px 24px}.header-inner{flex-direction:column;align-items:flex-start}
-  main{padding:20px 20px 60px}.nav-inner{padding:0 20px}
+  header{padding:24px 16px 16px}.header-inner{flex-direction:column;align-items:flex-start}
+  .header-actions{flex-wrap:wrap;gap:4px}
+  .hbtn{font-size:10px;padding:5px 10px}
+  main{padding:12px 12px 60px}.nav-inner{padding:0 12px}
   .rel-wrap{grid-template-columns:1fr}.theme-grid{grid-template-columns:1fr}
   .memo-grid{grid-template-columns:1fr}.chart-edit-row{grid-template-columns:1fr 1fr}
+  .write-layout{grid-template-columns:1fr;grid-template-rows:auto 1fr;height:calc(100vh - 120px)}
+  .write-sidebar{max-height:160px;overflow-y:auto;border-right:none;border-bottom:1px solid var(--border)}
+  .write-sidebar-hd{padding:8px 12px}
+  .wci{padding:7px 12px;display:flex;gap:8px;align-items:center}
+  .wci-n{margin:0}.wci-c{margin:0;margin-left:auto}
+  .write-editor{padding:20px 16px;font-size:14px;line-height:2}
+  .write-plot{margin:0 16px 16px;padding:10px 12px}
 }
 </style>
 </head>
@@ -1347,6 +1356,24 @@ async function setupGist(){
   if(!token){ setSyncStatus('トークンを入力してください', true); return; }
   const btn = document.getElementById('gistConnectBtn');
   btn.textContent='接続中…'; btn.disabled=true;
+
+  // まずトークンの有効性を確認
+  try{
+    const testRes = await fetch('https://api.github.com/user', {
+      headers:{'Authorization':`Bearer ${token}`}
+    });
+    if(!testRes.ok){
+      const e = await testRes.json().catch(()=>({}));
+      setSyncStatus(`トークンエラー(${testRes.status}): ${e.message||'無効なトークンです'}`, true);
+      btn.textContent='接続する'; btn.disabled=false;
+      return;
+    }
+  }catch(e){
+    setSyncStatus(`通信エラー: ${e.message} — ネットワークを確認してください`, true);
+    btn.textContent='接続する'; btn.disabled=false;
+    return;
+  }
+
   localStorage.setItem('nm_gist_token', token);
 
   if(existingId){
@@ -1355,14 +1382,16 @@ async function setupGist(){
     if(ok){
       setSyncStatus('✓ Gistからデータを読み込みました');
       updateGistBadge();
-      // UI再描画
       renderChapters(); renderMemos(); renderHistory();
       renderArrows(); renderSvgNodes(); renderExtraChars();
       if(chartInited) rebuildChart();
-      setTimeout(()=>closeSyncModal(), 800);
+      document.getElementById('gistCreatedId').textContent = existingId;
+      document.getElementById('gistCreatedWrap').style.display = 'block';
+      setTimeout(()=>{ btn.textContent='接続する'; btn.disabled=false; closeSyncModal(); }, 800);
       toast('☁ Gistから同期しました');
+      return;
     } else {
-      setSyncStatus('Gist IDが見つかりません。確認してください', true);
+      setSyncStatus('Gist IDが見つかりません。IDを確認してください', true);
       localStorage.removeItem('nm_gist_id');
     }
   } else {
@@ -1375,9 +1404,6 @@ async function setupGist(){
       setSyncStatus('✓ Gistを作成しました。下のIDを他端末で使用してください');
       updateGistBadge();
       toast('☁ Gistを作成しました');
-    } else {
-      setSyncStatus('Gist作成に失敗しました。トークンを確認してください', true);
-      localStorage.removeItem('nm_gist_token');
     }
   }
   btn.textContent='接続する'; btn.disabled=false;
