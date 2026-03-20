@@ -294,7 +294,7 @@ label.field-label{display:block;font-family:var(--sans);font-size:11px;color:var
     <div class="extra-chars-grid" id="extraCharsGrid"></div>
   </div>
   <div style="margin-top:16px">
-    <button class="hbtn" onclick="openAddChar()" id="addCharBtn" style="display:none">＋ 人物を追加</button>
+    <button class="hbtn" onclick="openAddChar()" id="addCharBtn">＋ 人物を追加</button>
   </div>
 </div>
 
@@ -559,7 +559,6 @@ function toggleEdit(){
   document.querySelectorAll('.edit-bar').forEach(b=>b.classList.toggle('on',editMode));
   document.getElementById('chartEditRow').style.display=editMode&&currentChartIdx!==null?'grid':'none';
   if(currentChar)renderCharDetail(currentChar);
-  document.getElementById('addCharBtn').style.display=editMode?'inline-block':'none';
   renderExtraChars();
   toast(editMode?'編集モード ON':'編集モード OFF');
 }
