@@ -175,6 +175,7 @@ label.field-label{display:block;font-family:var(--sans);font-size:11px;color:var
 .write-editor::placeholder{color:var(--ink3);font-style:italic;font-size:13px}
 .write-plot{background:var(--bg2);border-left:2px solid var(--border2);padding:12px 16px;margin:0 52px 24px;border-radius:0 6px 6px 0;font-family:var(--sans);font-size:12px;color:var(--ink3);line-height:1.8}
 .write-empty{display:flex;align-items:center;justify-content:center;height:100%;font-family:var(--sans);font-size:13px;color:var(--ink3);text-align:center;line-height:2.2}
+.cpick.sel{box-shadow:0 0 0 3px var(--ink)!important}
 .color-pick{width:36px;height:28px;border-radius:6px;cursor:pointer;font-family:var(--sans);font-size:10px;transition:transform .15s}
 .color-pick:hover{transform:scale(1.1)}
 .color-pick.selected{box-shadow:0 0 0 3px var(--ink)}
@@ -231,18 +232,15 @@ label.field-label{display:block;font-family:var(--sans);font-size:11px;color:var
 <!-- 関係図 -->
 <div id="rel" class="panel active">
   <div class="sec-title">登場人物と関係図</div>
-  <div id="editBarRel" class="edit-bar" style="display:none">
-    <div class="edit-bar-dot"></div>
-    編集モード ON — 人物をクリックして説明文を編集できます
-  </div>
   <div class="rel-wrap">
     <div class="svg-map-wrap">
-      <svg viewBox="0 0 660 430" preserveAspectRatio="xMidYMid meet">
+      <svg id="relSvg" viewBox="0 0 660 430" preserveAspectRatio="xMidYMid meet">
         <defs>
           <marker id="arr" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
             <path d="M2 1L8 5L2 9" fill="none" stroke="context-stroke" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
           </marker>
         </defs>
+        <!-- 矢印ライン（固定） -->
         <line x1="230" y1="100" x2="252" y2="195" stroke="#2e4a7a" stroke-width="1.4" marker-end="url(#arr)" opacity=".8"/>
         <text x="210" y="150" text-anchor="middle" font-size="9.5" font-family="'Noto Sans JP',sans-serif" fill="#2e4a7a">憧れ→醒め</text>
         <line x1="278" y1="250" x2="200" y2="310" stroke="#3d6b5a" stroke-width="1.4" marker-end="url(#arr)" opacity=".8"/>
@@ -255,46 +253,25 @@ label.field-label{display:block;font-family:var(--sans);font-size:11px;color:var
         <text x="490" y="122" text-anchor="middle" font-size="9.5" font-family="'Noto Sans JP',sans-serif" fill="#4a443d">照射する存在</text>
         <line x1="422" y1="216" x2="446" y2="310" stroke="#8a807a" stroke-width="1" stroke-dasharray="3 3" opacity=".55" marker-end="url(#arr)"/>
         <text x="450" y="264" text-anchor="start" font-size="9.5" font-family="'Noto Sans JP',sans-serif" fill="#8a807a" opacity=".8">友人</text>
-        <g style="cursor:pointer" onclick="showChar('keitaro')">
-          <rect x="252" y="178" width="170" height="82" rx="9" fill="#f7f4ef" stroke="#2e4a7a" stroke-width="1.6"/>
-          <foreignObject x="252" y="178" width="170" height="82"><div xmlns="http://www.w3.org/1999/xhtml" style="width:170px;height:82px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;padding:6px;text-align:center"><div style="font-size:13px;font-weight:500;font-family:'Noto Serif JP',serif;color:#1a1714">津田敬太郎</div><div style="font-size:10px;font-family:'Noto Sans JP',sans-serif;color:#8a807a">東大国文・ピアニスト</div><div style="font-size:9px;font-family:'Noto Sans JP',sans-serif;background:#e8eef8;color:#2e4a7a;padding:2px 9px;border-radius:9px;margin-top:3px">降りられない客席</div></div></foreignObject>
-        </g>
-        <g style="cursor:pointer" onclick="showChar('maya')">
-          <rect x="68" y="58" width="162" height="82" rx="9" fill="#f7f4ef" stroke="#a07840" stroke-width="1.6"/>
-          <foreignObject x="68" y="58" width="162" height="82"><div xmlns="http://www.w3.org/1999/xhtml" style="width:162px;height:82px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;padding:6px;text-align:center"><div style="font-size:13px;font-weight:500;font-family:'Noto Serif JP',serif;color:#1a1714">摩耶</div><div style="font-size:10px;font-family:'Noto Sans JP',sans-serif;color:#8a807a">バイオリニスト・27歳</div><div style="font-size:9px;font-family:'Noto Sans JP',sans-serif;background:#fdf5e6;color:#a07840;padding:2px 9px;border-radius:9px;margin-top:3px">反射する自意識</div></div></foreignObject>
-        </g>
-        <g style="cursor:pointer" onclick="showChar('riko')">
-          <rect x="48" y="308" width="164" height="82" rx="9" fill="#f7f4ef" stroke="#3d6b5a" stroke-width="1.6"/>
-          <foreignObject x="48" y="308" width="164" height="82"><div xmlns="http://www.w3.org/1999/xhtml" style="width:164px;height:82px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;padding:6px;text-align:center"><div style="font-size:13px;font-weight:500;font-family:'Noto Serif JP',serif;color:#1a1714">橋本莉子</div><div style="font-size:10px;font-family:'Noto Sans JP',sans-serif;color:#8a807a">東大国文・官僚志望</div><div style="font-size:9px;font-family:'Noto Sans JP',sans-serif;background:#e6f2ed;color:#3d6b5a;padding:2px 9px;border-radius:9px;margin-top:3px">陥没した自意識</div></div></foreignObject>
-        </g>
-        <g style="cursor:pointer" onclick="showChar('tetsuya')">
-          <rect x="446" y="290" width="164" height="82" rx="9" fill="#f7f4ef" stroke="#7a4f2e" stroke-width="1.6"/>
-          <foreignObject x="446" y="290" width="164" height="82"><div xmlns="http://www.w3.org/1999/xhtml" style="width:164px;height:82px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;padding:6px;text-align:center"><div style="font-size:13px;font-weight:500;font-family:'Noto Serif JP',serif;color:#1a1714">宇野哲也</div><div style="font-size:10px;font-family:'Noto Sans JP',sans-serif;color:#8a807a">春本研究・院進志望</div><div style="font-size:9px;font-family:'Noto Sans JP',sans-serif;background:#f5ede6;color:#7a4f2e;padding:2px 9px;border-radius:9px;margin-top:3px">自意識を持たない</div></div></foreignObject>
-        </g>
-        <g style="cursor:pointer" onclick="showChar('keiko')">
-          <rect x="458" y="25" width="162" height="65" rx="9" fill="#f7f4ef" stroke="#4a443d" stroke-width="1.2"/>
-          <foreignObject x="458" y="25" width="162" height="65"><div xmlns="http://www.w3.org/1999/xhtml" style="width:162px;height:65px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;padding:6px;text-align:center"><div style="font-size:12px;font-weight:500;font-family:'Noto Serif JP',serif;color:#1a1714">圭子先生</div><div style="font-size:10px;font-family:'Noto Sans JP',sans-serif;color:#8a807a">東京音大・72歳</div><div style="font-size:9px;font-family:'Noto Sans JP',sans-serif;background:#eeecea;color:#4a443d;padding:2px 9px;border-radius:9px;margin-top:3px">照射する存在</div></div></foreignObject>
-        </g>
-        <g style="cursor:pointer" onclick="showChar('jigyo')">
-          <rect x="474" y="168" width="152" height="62" rx="9" fill="#f7f4ef" stroke="#a07840" stroke-width="1.1" stroke-dasharray="5 2" opacity=".85"/>
-          <foreignObject x="474" y="168" width="152" height="62"><div xmlns="http://www.w3.org/1999/xhtml" style="width:152px;height:62px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;padding:6px;text-align:center"><div style="font-size:12px;font-weight:500;font-family:'Noto Serif JP',serif;color:#1a1714">事業家</div><div style="font-size:10px;font-family:'Noto Sans JP',sans-serif;color:#8a807a">摩耶のパトロン</div><div style="font-size:9px;font-family:'Noto Sans JP',sans-serif;background:#fdf5e6;color:#a07840;padding:2px 9px;border-radius:9px;margin-top:3px">資本の象徴</div></div></foreignObject>
-        </g>
+        <!-- ノードはJSで描画 -->
+        <g id="svgNodes"></g>
       </svg>
     </div>
     <div class="char-detail" id="charDetail">
       <div class="detail-placeholder">
         <span style="font-size:28px;opacity:.3">人</span>
         <span>人物をクリックすると詳細が表示されます</span>
-        <span style="font-size:10px;opacity:.5">編集モード ON で内容を変更できます</span>
       </div>
     </div>
   </div>
-  <div class="extra-chars" id="extraCharsArea" style="display:none">
-    <div class="extra-chars-title">追加人物</div>
-    <div class="extra-chars-grid" id="extraCharsGrid"></div>
+  <!-- 追加人物エリア（常に表示） -->
+  <div id="extraCharsArea" style="margin-top:20px;display:none">
+    <div style="font-family:var(--sans);font-size:10px;letter-spacing:.15em;text-transform:uppercase;color:var(--ink3);margin-bottom:10px;padding-bottom:6px;border-bottom:.5px solid var(--border)">追加人物</div>
+    <div id="extraCharsGrid" style="display:flex;flex-wrap:wrap;gap:8px"></div>
   </div>
-  <div style="margin-top:16px">
-    <button class="hbtn" onclick="openAddChar()" id="addCharBtn">＋ 人物を追加</button>
+  <!-- 追加ボタン（常に表示） -->
+  <div style="margin-top:14px">
+    <button class="hbtn" onclick="openAddChar()">＋ 人物を追加</button>
   </div>
 </div>
 
@@ -446,13 +423,13 @@ label.field-label{display:block;font-family:var(--sans);font-size:11px;color:var
   <div class="modal">
     <button class="modal-close" onclick="closeAddChar()">×</button>
     <h2>人物を追加</h2>
-    <div class="modal-sub">関係図の下の「追加人物」エリアに表示されます</div>
+    <div class="modal-sub">関係図の下に追加されます</div>
     <div class="field-group">
-      <label class="field-label">名前（日本語）</label>
+      <label class="field-label">名前</label>
       <input type="text" id="acName" placeholder="例：矢野悠太">
     </div>
     <div class="field-group">
-      <label class="field-label">名前（ローマ字）</label>
+      <label class="field-label">ローマ字</label>
       <input type="text" id="acEn" placeholder="例：Yuta Yano">
     </div>
     <div class="field-group">
@@ -461,17 +438,17 @@ label.field-label{display:block;font-family:var(--sans);font-size:11px;color:var
     </div>
     <div class="field-group">
       <label class="field-label">自意識の型</label>
-      <input type="text" id="acType" placeholder="例：矢野の自意識">
+      <input type="text" id="acType" placeholder="例：ライバル">
     </div>
     <div class="field-group">
       <label class="field-label">テーマカラー</label>
-      <div style="display:flex;gap:8px;flex-wrap:wrap" id="acColorPicker">
-        <button class="color-pick" data-c="#e8eef8" data-t="#2e4a7a" style="background:#e8eef8;border:2px solid #2e4a7a" onclick="pickColor(this)">青</button>
-        <button class="color-pick" data-c="#fdf5e6" data-t="#a07840" style="background:#fdf5e6;border:2px solid #a07840" onclick="pickColor(this)">金</button>
-        <button class="color-pick" data-c="#e6f2ed" data-t="#3d6b5a" style="background:#e6f2ed;border:2px solid #3d6b5a" onclick="pickColor(this)">緑</button>
-        <button class="color-pick" data-c="#f5ede6" data-t="#7a4f2e" style="background:#f5ede6;border:2px solid #7a4f2e" onclick="pickColor(this)">茶</button>
-        <button class="color-pick" data-c="#eeecea" data-t="#4a443d" style="background:#eeecea;border:2px solid #4a443d" onclick="pickColor(this)">墨</button>
-        <button class="color-pick" data-c="#f0e6f5" data-t="#6a3d8a" style="background:#f0e6f5;border:2px solid #6a3d8a" onclick="pickColor(this)">紫</button>
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        <button class="cpick" data-bg="#e8eef8" data-txt="#2e4a7a" style="width:36px;height:28px;border-radius:6px;background:#e8eef8;border:2px solid #2e4a7a;cursor:pointer;font-family:var(--sans);font-size:10px" onclick="pickColor(this)">青</button>
+        <button class="cpick" data-bg="#fdf5e6" data-txt="#a07840" style="width:36px;height:28px;border-radius:6px;background:#fdf5e6;border:2px solid #a07840;cursor:pointer;font-family:var(--sans);font-size:10px" onclick="pickColor(this)">金</button>
+        <button class="cpick" data-bg="#e6f2ed" data-txt="#3d6b5a" style="width:36px;height:28px;border-radius:6px;background:#e6f2ed;border:2px solid #3d6b5a;cursor:pointer;font-family:var(--sans);font-size:10px" onclick="pickColor(this)">緑</button>
+        <button class="cpick" data-bg="#f5ede6" data-txt="#7a4f2e" style="width:36px;height:28px;border-radius:6px;background:#f5ede6;border:2px solid #7a4f2e;cursor:pointer;font-family:var(--sans);font-size:10px" onclick="pickColor(this)">茶</button>
+        <button class="cpick sel" data-bg="#eeecea" data-txt="#4a443d" style="width:36px;height:28px;border-radius:6px;background:#eeecea;border:2px solid #4a443d;cursor:pointer;font-family:var(--sans);font-size:10px;box-shadow:0 0 0 2px var(--ink)" onclick="pickColor(this)">墨</button>
+        <button class="cpick" data-bg="#f0e6f5" data-txt="#6a3d8a" style="width:36px;height:28px;border-radius:6px;background:#f0e6f5;border:2px solid #6a3d8a;cursor:pointer;font-family:var(--sans);font-size:10px" onclick="pickColor(this)">紫</button>
       </div>
     </div>
     <div class="field-group">
@@ -495,12 +472,12 @@ const LS={
 };
 
 const CD={
-  keitaro:{name:'津田敬太郎',en:'Keitaro Tsuda',typeColor:'#e8eef8',typeText:'#2e4a7a',type:'降りられない客席',body:'<strong>自意識の型：降りられない客席</strong><br>批評眼が先行し、何かに踏み出す前に踏み出した自分を外から見てしまう。ピアノをアイデンティティにしたいが「それをするとダサい」とわかっている。<br><br>演奏中だけ批評眼が止まる——自意識が一時的に死ぬ体験を知ってしまったから手放せない。父を大学2年の時に亡くしている。<br><br><strong>モデル：</strong>漱石の敬太郎（命名の起点）＋トーニオ・クレーガー。'},
-  maya:{name:'摩耶',en:'Maya',typeColor:'#fdf5e6',typeText:'#a07840',type:'反射する自意識',body:'<strong>自意識の型：反射する自意識</strong><br>資本家という光源を浴びて輝く。音楽への誠実さは本物だが、その誠実さを支える環境（防音マンション、5億のストラディバリウス）が自分のものではない。<br><br><strong>核心：</strong>事業家との結婚を選ぶことに苦しんでいる。摩耶の苦しみが敬太郎には見えない。身体の領域では経験が少なく背伸びする——このギャップが人物を深くする。<br><br>摩耶は語る人間。独白させるが核心だけは語らせない。'},
-  riko:{name:'橋本莉子',en:'Riko Hashimoto',typeColor:'#e6f2ed',typeText:'#3d6b5a',type:'陥没した自意識',body:'<strong>自意識の型：陥没した自意識</strong><br>「私なんて」という劣等感が地中に埋まっている。ちやほやされると否定が入る。高校3年で母を亡くし、浪人を経て入学。<br><br>莉子は語らない人間。身体や動作で内側を見せる。コンクールに来ること——自己否定を一日だけ黙らせて来る——これが莉子の最大の能動性。<br><br><strong>お玉（鴎外『雁』）との共鳴：</strong>ただしお玉より一歩前に出る。'},
-  tetsuya:{name:'宇野哲也',en:'Tetsuya Uno',typeColor:'#f5ede6',typeText:'#7a4f2e',type:'自意識を持たない',body:'<strong>自意識の型：自意識を持たない</strong><br>感情を検分しない。実家（今治のタオル工場）の経済的安定が背景。春本研究から商社内定へ——自意識なき人間の資本への自然な着地。<br><br>莉子への好意を自覚していない。敬太郎が莉子と哲也の関係を誤読する——これが22章の嫉妬の場面へ。'},
-  keiko:{name:'斉藤圭子先生',en:'Keiko Saito',typeColor:'#eeecea',typeText:'#4a443d',type:'照射する存在',body:'<strong>機能：存在として照射する</strong><br>かつてコンクールで挫折した人間——その過去は語られないが敬太郎の矛盾と静かに響き合う。<br><br>「落ちて当然よ」——優しくないが嘘もつかない。バイオリンのチケットを手渡すことで物語全体を動かす。<br><br>摩耶と別れた後、敬太郎の家庭教師バイトを紹介する（ピアノも教えられる家庭教師として）。4章と18章の対称構造。'},
-  jigyo:{name:'事業家',en:'The Businessman',typeColor:'#fdf5e6',typeText:'#a07840',type:'資本の象徴',body:'<strong>直接登場しない構造的な存在</strong><br>物語に顔を出さないが構造全体を規定している。<br><br>摩耶が結婚を受け入れることで、敬太郎は「誠実であることと自由であることが同時に成立しない構造」に絶望する。'}
+  keitaro:{name:'津田敬太郎',en:'Keitaro Tsuda',sub:'東大国文・ピアニスト',typeColor:'#e8eef8',typeText:'#2e4a7a',type:'降りられない客席',body:'<strong>自意識の型：降りられない客席</strong><br>批評眼が先行し、何かに踏み出す前に踏み出した自分を外から見てしまう。ピアノをアイデンティティにしたいが「それをするとダサい」とわかっている。<br><br>演奏中だけ批評眼が止まる——自意識が一時的に死ぬ体験を知ってしまったから手放せない。父を大学2年の時に亡くしている。<br><br><strong>モデル：</strong>漱石の敬太郎（命名の起点）＋トーニオ・クレーガー。'},
+  maya:{name:'摩耶',en:'Maya',sub:'バイオリニスト・27歳',typeColor:'#fdf5e6',typeText:'#a07840',type:'反射する自意識',body:'<strong>自意識の型：反射する自意識</strong><br>資本家という光源を浴びて輝く。音楽への誠実さは本物だが、その誠実さを支える環境（防音マンション、5億のストラディバリウス）が自分のものではない。<br><br><strong>核心：</strong>事業家との結婚を選ぶことに苦しんでいる。摩耶の苦しみが敬太郎には見えない。身体の領域では経験が少なく背伸びする——このギャップが人物を深くする。<br><br>摩耶は語る人間。独白させるが核心だけは語らせない。'},
+  riko:{name:'橋本莉子',en:'Riko Hashimoto',sub:'東大国文・官僚志望',typeColor:'#e6f2ed',typeText:'#3d6b5a',type:'陥没した自意識',body:'<strong>自意識の型：陥没した自意識</strong><br>「私なんて」という劣等感が地中に埋まっている。ちやほやされると否定が入る。高校3年で母を亡くし、浪人を経て入学。<br><br>莉子は語らない人間。身体や動作で内側を見せる。コンクールに来ること——自己否定を一日だけ黙らせて来る——これが莉子の最大の能動性。<br><br><strong>お玉（鴎外『雁』）との共鳴：</strong>ただしお玉より一歩前に出る。'},
+  tetsuya:{name:'宇野哲也',en:'Tetsuya Uno',sub:'春本研究・院進志望',typeColor:'#f5ede6',typeText:'#7a4f2e',type:'自意識を持たない',body:'<strong>自意識の型：自意識を持たない</strong><br>感情を検分しない。実家（今治のタオル工場）の経済的安定が背景。春本研究から商社内定へ——自意識なき人間の資本への自然な着地。<br><br>莉子への好意を自覚していない。敬太郎が莉子と哲也の関係を誤読する——これが22章の嫉妬の場面へ。'},
+  keiko:{name:'斉藤圭子先生',en:'Keiko Saito',sub:'東京音大・72歳',typeColor:'#eeecea',typeText:'#4a443d',type:'照射する存在',body:'<strong>機能：存在として照射する</strong><br>かつてコンクールで挫折した人間——その過去は語られないが敬太郎の矛盾と静かに響き合う。<br><br>「落ちて当然よ」——優しくないが嘘もつかない。バイオリンのチケットを手渡すことで物語全体を動かす。<br><br>摩耶と別れた後、敬太郎の家庭教師バイトを紹介する（ピアノも教えられる家庭教師として）。4章と18章の対称構造。'},
+  jigyo:{name:'事業家',en:'The Businessman',sub:'摩耶のパトロン',typeColor:'#fdf5e6',typeText:'#a07840',type:'資本の象徴',body:'<strong>直接登場しない構造的な存在</strong><br>物語に顔を出さないが構造全体を規定している。<br><br>摩耶が結婚を受け入れることで、敬太郎は「誠実であることと自由であることが同時に成立しない構造」に絶望する。'}
 };
 
 const CHD=[
@@ -575,7 +552,38 @@ function switchTab(id){
   if(id==='write')renderWriteSidebar();
 }
 
-// Characters
+// Characters — SVG nodes rendered from data
+const SVG_NODES = {
+  keitaro: {x:252,y:178,w:170,h:82,stroke:'#2e4a7a'},
+  maya:    {x:68, y:58, w:162,h:82,stroke:'#a07840'},
+  riko:    {x:48, y:308,w:164,h:82,stroke:'#3d6b5a'},
+  tetsuya: {x:446,y:290,w:164,h:82,stroke:'#7a4f2e'},
+  keiko:   {x:458,y:25, w:162,h:65,stroke:'#4a443d'},
+  jigyo:   {x:474,y:168,w:152,h:62,stroke:'#a07840',dash:'5 2',opacity:.85}
+};
+
+function renderSvgNodes(){
+  const g = document.getElementById('svgNodes');
+  if(!g) return;
+  g.innerHTML = Object.keys(SVG_NODES).map(id => {
+    const pos = SVG_NODES[id];
+    const c = CHARS[id];
+    if(!c) return '';
+    const strokeAttr = pos.dash ? `stroke-dasharray="${pos.dash}"` : '';
+    const opacityAttr = pos.opacity ? `opacity="${pos.opacity}"` : '';
+    return `<g style="cursor:pointer" onclick="showChar('${id}')">
+      <rect x="${pos.x}" y="${pos.y}" width="${pos.w}" height="${pos.h}" rx="9" fill="#f7f4ef" stroke="${pos.stroke}" stroke-width="1.6" ${strokeAttr} ${opacityAttr}/>
+      <foreignObject x="${pos.x}" y="${pos.y}" width="${pos.w}" height="${pos.h}">
+        <div xmlns="http://www.w3.org/1999/xhtml" style="width:${pos.w}px;height:${pos.h}px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;padding:6px;text-align:center;pointer-events:none">
+          <div style="font-size:${id==='keiko'||id==='jigyo'?'12':'13'}px;font-weight:500;font-family:'Noto Serif JP',serif;color:#1a1714">${c.name}</div>
+          ${c.sub?`<div style="font-size:10px;font-family:'Noto Sans JP',sans-serif;color:#8a807a">${c.sub}</div>`:''}
+          ${c.type?`<div style="font-size:9px;font-family:'Noto Sans JP',sans-serif;background:${c.typeColor};color:${c.typeText};padding:2px 9px;border-radius:9px;margin-top:3px">${c.type}</div>`:''}
+        </div>
+      </foreignObject>
+    </g>`;
+  }).join('');
+}
+
 function showChar(id){
   currentChar=id;
   renderCharDetail(id);
@@ -583,36 +591,57 @@ function showChar(id){
 
 function renderCharDetail(id){
   const c=CHARS[id];
+  if(!c) return;
   const el=document.getElementById('charDetail');
   if(editMode){
     el.innerHTML=`
-      <div class="detail-name">${c.name}</div>
-      <div class="detail-en">${c.en}</div>
-      <span class="detail-type" style="background:${c.typeColor};color:${c.typeText}">${c.type}</span>
-      <div class="field-group" style="margin-top:8px">
-        <label class="field-label">説明文（HTMLタグ使用可）</label>
-        <textarea id="charEditArea" rows="8">${c.body}</textarea>
-      </div>
-      <div class="btn-row">
-        <button class="save-btn" onclick="saveCharBody('${id}')">保存</button>
+      <div style="margin-bottom:12px">
+        <div class="field-group">
+          <label class="field-label">名前</label>
+          <input type="text" id="ceName" value="${c.name||''}">
+        </div>
+        <div class="field-group">
+          <label class="field-label">属性・役割</label>
+          <input type="text" id="ceSub" value="${c.sub||''}">
+        </div>
+        <div class="field-group">
+          <label class="field-label">自意識の型</label>
+          <input type="text" id="ceType" value="${c.type||''}">
+        </div>
+        <div class="field-group">
+          <label class="field-label">説明文（HTMLタグ使用可）</label>
+          <textarea id="ceBody" rows="7">${c.body||''}</textarea>
+        </div>
+        <div class="btn-row">
+          <button class="save-btn" onclick="saveCharAll('${id}')">保存</button>
+        </div>
       </div>`;
-  }else{
+  } else {
     el.innerHTML=`
       <div class="detail-name">${c.name}</div>
-      <div class="detail-en">${c.en}</div>
+      <div class="detail-en">${c.en||''}</div>
       <span class="detail-type" style="background:${c.typeColor};color:${c.typeText}">${c.type}</span>
-      <div class="detail-body" style="margin-top:12px">${c.body}</div>`;
+      <div class="detail-body" style="margin-top:12px">${c.body||''}</div>`;
   }
 }
 
-function saveCharBody(id){
-  const old=CHARS[id].body;
-  CHARS[id].body=document.getElementById('charEditArea').value;
+function saveCharAll(id){
+  const old = CHARS[id].name;
+  CHARS[id].name = document.getElementById('ceName').value;
+  CHARS[id].sub  = document.getElementById('ceSub').value;
+  CHARS[id].type = document.getElementById('ceType').value;
+  CHARS[id].body = document.getElementById('ceBody').value;
+  // extraCharsにも保存
+  const ec = LS.get('extraChars')||{};
+  if(ec[id]) { ec[id] = Object.assign({},CHARS[id]); LS.set('extraChars',ec); }
   LS.set('chars',CHARS);
-  addHistory(`人物「${CHARS[id].name}」の説明文を更新`);
+  addHistory(`人物「${old}」の情報を更新`);
+  renderSvgNodes();
   renderCharDetail(id);
+  renderExtraChars();
   toast('保存しました');
 }
+
 
 // Chart
 let chartInited=false;
@@ -866,15 +895,12 @@ function onImport(input){
 
 
 // Extra characters
-let acSelectedColor = {bg:'#eeecea', text:'#4a443d'};
+let acSelColor = {bg:'#eeecea', text:'#4a443d'};
 
 function openAddChar(){
-  acSelectedColor={bg:'#eeecea',text:'#4a443d'};
-  document.querySelectorAll('.color-pick').forEach(b=>b.classList.remove('selected'));
-  ['acName','acEn','acSub','acType','acBody'].forEach(id=>{
-    const el=document.getElementById(id);
-    if(el)el.value='';
-  });
+  acSelColor={bg:'#eeecea',text:'#4a443d'};
+  document.querySelectorAll('.cpick').forEach(b=>b.classList.remove('sel'));
+  ['acName','acEn','acSub','acType','acBody'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
   document.getElementById('addCharOverlay').classList.add('open');
 }
 
@@ -884,27 +910,28 @@ function closeAddChar(e){
 }
 
 function pickColor(btn){
-  document.querySelectorAll('.color-pick').forEach(b=>b.classList.remove('selected'));
-  btn.classList.add('selected');
-  acSelectedColor={bg:btn.dataset.c, text:btn.dataset.t};
+  document.querySelectorAll('.cpick').forEach(b=>b.classList.remove('sel'));
+  btn.classList.add('sel');
+  acSelColor={bg:btn.dataset.bg, text:btn.dataset.txt};
 }
 
 function saveNewChar(){
-  const name=document.getElementById('acName').value.trim();
+  const name=(document.getElementById('acName').value||'').trim();
   if(!name){toast('名前を入力してください');return;}
-  const id='extra_'+Date.now();
-  const extraChars=LS.get('extraChars')||{};
-  extraChars[id]={
+  const id='ec_'+Date.now();
+  const ec=LS.get('extraChars')||{};
+  const newC={
     name,
-    en:document.getElementById('acEn').value.trim()||name,
-    sub:document.getElementById('acSub').value.trim()||'',
-    type:document.getElementById('acType').value.trim()||'',
-    typeColor:acSelectedColor.bg,
-    typeText:acSelectedColor.text,
-    body:document.getElementById('acBody').value.trim()||''
+    en:(document.getElementById('acEn').value||'').trim()||name,
+    sub:(document.getElementById('acSub').value||'').trim(),
+    type:(document.getElementById('acType').value||'').trim(),
+    typeColor:acSelColor.bg,
+    typeText:acSelColor.txt||acSelColor.text,
+    body:(document.getElementById('acBody').value||'').trim()
   };
-  LS.set('extraChars',extraChars);
-  CHARS[id]=Object.assign({},extraChars[id]);
+  ec[id]=newC;
+  CHARS[id]=Object.assign({},newC);
+  LS.set('extraChars',ec);
   addHistory(`人物「${name}」を追加`);
   closeAddChar();
   renderExtraChars();
@@ -913,32 +940,29 @@ function saveNewChar(){
 }
 
 function deleteExtraChar(id){
-  const extraChars=LS.get('extraChars')||{};
-  const name=extraChars[id]?.name||'?';
+  const ec=LS.get('extraChars')||{};
+  const name=ec[id]?.name||'?';
   if(!confirm(`「${name}」を削除しますか？`))return;
-  delete extraChars[id];
-  delete CHARS[id];
-  LS.set('extraChars',extraChars);
+  delete ec[id]; delete CHARS[id];
+  LS.set('extraChars',ec);
   addHistory(`人物「${name}」を削除`);
   renderExtraChars();
-  document.getElementById('charDetail').innerHTML=`<div class="detail-placeholder"><span style="font-size:28px;opacity:.3">人</span><span>人物をクリックすると詳細が表示されます</span></div>`;
+  document.getElementById('charDetail').innerHTML='<div class="detail-placeholder"><span>人物をクリックすると詳細が表示されます</span></div>';
   toast('削除しました');
 }
 
 function renderExtraChars(){
-  const extraChars=LS.get('extraChars')||{};
-  // CHARSにも反映
-  Object.entries(extraChars).forEach(([id,c])=>{CHARS[id]=c;});
-  const keys=Object.keys(extraChars);
+  const ec=LS.get('extraChars')||{};
+  Object.entries(ec).forEach(([id,c])=>{CHARS[id]=c;});
+  const keys=Object.keys(ec);
   const area=document.getElementById('extraCharsArea');
   const grid=document.getElementById('extraCharsGrid');
-  if(!area||!grid)return;
-  if(keys.length===0){area.style.display='none';return;}
-  area.style.display='block';
+  if(!area||!grid) return;
+  area.style.display=keys.length?'block':'none';
   grid.innerHTML=keys.map(id=>{
-    const c=extraChars[id];
-    return `<div class="extra-char-card" onclick="showChar('${id}')">
-      ${editMode?`<button class="extra-char-del" onclick="event.stopPropagation();deleteExtraChar('${id}')">×</button>`:''}
+    const c=ec[id];
+    return `<div style="background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:10px 14px;cursor:pointer;transition:all .15s;min-width:140px;position:relative" onclick="showChar('${id}')" onmouseover="this.style.background='var(--bg2)'" onmouseout="this.style.background='var(--bg)'">
+      ${editMode?`<button onclick="event.stopPropagation();deleteExtraChar('${id}')" style="position:absolute;top:6px;right:8px;background:none;border:none;cursor:pointer;color:var(--ink3);font-size:12px;padding:2px" onmouseover="this.style.color='#c0392b'" onmouseout="this.style.color='var(--ink3)'">×</button>`:''}
       <div style="font-size:12px;font-weight:500;font-family:var(--serif);color:var(--ink)">${c.name}</div>
       <div style="font-size:10px;font-family:var(--sans);color:var(--ink3);margin-top:2px">${c.sub||''}</div>
       ${c.type?`<span style="display:inline-block;font-family:var(--sans);font-size:9px;padding:2px 8px;border-radius:8px;margin-top:4px;background:${c.typeColor};color:${c.typeText}">${c.type}</span>`:''}
@@ -1007,6 +1031,7 @@ function toast(msg){
 }
 
 // Init
+renderSvgNodes();
 renderExtraChars();
 document.addEventListener('keydown',e=>{if(e.key==='Escape')closeChModal();});
 renderChapters();
