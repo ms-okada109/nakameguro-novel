@@ -27,8 +27,8 @@ h1 span{font-family:'EB Garamond',serif;font-style:italic;font-size:.5em;color:v
 .hbtn.active{background:var(--accent);color:#fff;border-color:var(--accent)}
 
 /* Nav */
-nav{position:sticky;top:0;z-index:100;background:rgba(247,244,239,0.96);backdrop-filter:blur(8px);border-bottom:1px solid var(--border)}
-.nav-inner{max-width:1200px;margin:0 auto;padding:0 40px;display:flex;align-items:center;gap:0;overflow-x:auto}
+nav{position:sticky;top:0;z-index:100;background:rgba(247,244,239,0.96);backdrop-filter:blur(8px);border-bottom:1px solid var(--border);min-height:46px}
+.nav-inner{max-width:1200px;margin:0 auto;padding:0 40px;display:flex;align-items:center;gap:0;overflow-x:auto;scrollbar-width:thin;scrollbar-color:var(--border) transparent}
 .nav-btn{padding:13px 16px;font-family:var(--sans);font-size:12px;letter-spacing:.08em;color:var(--ink3);background:none;border:none;border-bottom:2px solid transparent;cursor:pointer;transition:all .2s;white-space:nowrap;flex-shrink:0}
 .nav-btn:hover{color:var(--ink)}
 .nav-btn.active{color:var(--accent);border-bottom-color:var(--accent)}
@@ -175,6 +175,16 @@ label.field-label{display:block;font-family:var(--sans);font-size:11px;color:var
 .write-editor::placeholder{color:var(--ink3);font-style:italic;font-size:13px}
 .write-plot{background:var(--bg2);border-left:2px solid var(--border2);padding:12px 16px;margin:0 52px 24px;border-radius:0 6px 6px 0;font-family:var(--sans);font-size:12px;color:var(--ink3);line-height:1.8}
 .write-empty{display:flex;align-items:center;justify-content:center;height:100%;font-family:var(--sans);font-size:13px;color:var(--ink3);text-align:center;line-height:2.2}
+.color-pick{width:36px;height:28px;border-radius:6px;cursor:pointer;font-family:var(--sans);font-size:10px;transition:transform .15s}
+.color-pick:hover{transform:scale(1.1)}
+.color-pick.selected{box-shadow:0 0 0 3px var(--ink)}
+.extra-chars{margin-top:20px}
+.extra-chars-title{font-family:var(--sans);font-size:10px;letter-spacing:.15em;text-transform:uppercase;color:var(--ink3);margin-bottom:10px;padding-bottom:6px;border-bottom:.5px solid var(--border)}
+.extra-chars-grid{display:flex;flex-wrap:wrap;gap:8px}
+.extra-char-card{background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:10px 14px;cursor:pointer;transition:all .15s;min-width:140px;position:relative}
+.extra-char-card:hover{background:var(--bg2);transform:translateY(-1px)}
+.extra-char-del{position:absolute;top:6px;right:8px;background:none;border:none;cursor:pointer;color:var(--ink3);font-size:12px;line-height:1;padding:2px}
+.extra-char-del:hover{color:#c0392b}
 
 @media(max-width:768px){
   header{padding:32px 20px 24px}.header-inner{flex-direction:column;align-items:flex-start}
@@ -193,8 +203,7 @@ label.field-label{display:block;font-family:var(--sans);font-size:11px;color:var
       <h1>中目黒<span>Nakameguro</span></h1>
     </div>
     <div class="header-actions">
-      <button class="hbtn" id="editToggle" onclick="toggleEdit()">編集モード</button>
-      <button class="hbtn" onclick="exportJSON()">JSONエクスポート</button>
+<button class="hbtn" onclick="exportJSON()">JSONエクスポート</button>
       <button class="hbtn" onclick="importJSON()">インポート</button>
       <input type="file" id="importFile" accept=".json" style="display:none" onchange="onImport(this)">
     </div>
@@ -202,15 +211,18 @@ label.field-label{display:block;font-family:var(--sans);font-size:11px;color:var
 </header>
 
 <nav>
-  <div class="nav-inner">
-    <button class="nav-btn active" onclick="switchTab('rel')">関係図</button>
-    <button class="nav-btn" onclick="switchTab('cons')">自意識の変化</button>
-    <button class="nav-btn" onclick="switchTab('chapters')">章一覧</button>
-    <button class="nav-btn" onclick="switchTab('theme')">主題メモ</button>
-    <div class="nav-sep"></div>
-    <button class="nav-btn" onclick="switchTab('write')">✏ 執筆</button>
-    <button class="nav-btn" onclick="switchTab('memo')">アイデアメモ</button>
-    <button class="nav-btn" onclick="switchTab('history')">変更履歴</button>
+  <div style="max-width:1200px;margin:0 auto;padding:0 40px;display:flex;align-items:center;justify-content:space-between;border-bottom:.5px solid var(--border);flex-wrap:wrap">
+    <div style="display:flex;align-items:center;flex-wrap:wrap;gap:0">
+      <button class="nav-btn active" onclick="switchTab('rel')">関係図</button>
+      <button class="nav-btn" onclick="switchTab('cons')">自意識の変化</button>
+      <button class="nav-btn" onclick="switchTab('chapters')">章一覧</button>
+      <button class="nav-btn" onclick="switchTab('theme')">主題メモ</button>
+      <div class="nav-sep"></div>
+      <button class="nav-btn" onclick="switchTab('write')">✏ 執筆</button>
+      <button class="nav-btn" onclick="switchTab('memo')">メモ</button>
+      <button class="nav-btn" onclick="switchTab('history')">履歴</button>
+    </div>
+    <button class="hbtn" id="editToggle" onclick="toggleEdit()" style="margin:4px 0">編集モード</button>
   </div>
 </nav>
 
@@ -276,6 +288,13 @@ label.field-label{display:block;font-family:var(--sans);font-size:11px;color:var
         <span style="font-size:10px;opacity:.5">編集モード ON で内容を変更できます</span>
       </div>
     </div>
+  </div>
+  <div class="extra-chars" id="extraCharsArea" style="display:none">
+    <div class="extra-chars-title">追加人物</div>
+    <div class="extra-chars-grid" id="extraCharsGrid"></div>
+  </div>
+  <div style="margin-top:16px">
+    <button class="hbtn" onclick="openAddChar()" id="addCharBtn" style="display:none">＋ 人物を追加</button>
   </div>
 </div>
 
@@ -421,6 +440,51 @@ label.field-label{display:block;font-family:var(--sans);font-size:11px;color:var
   </div>
 </div>
 
+
+<!-- 人物追加モーダル -->
+<div class="overlay" id="addCharOverlay" onclick="closeAddChar(event)">
+  <div class="modal">
+    <button class="modal-close" onclick="closeAddChar()">×</button>
+    <h2>人物を追加</h2>
+    <div class="modal-sub">関係図の下の「追加人物」エリアに表示されます</div>
+    <div class="field-group">
+      <label class="field-label">名前（日本語）</label>
+      <input type="text" id="acName" placeholder="例：矢野悠太">
+    </div>
+    <div class="field-group">
+      <label class="field-label">名前（ローマ字）</label>
+      <input type="text" id="acEn" placeholder="例：Yuta Yano">
+    </div>
+    <div class="field-group">
+      <label class="field-label">属性・役割</label>
+      <input type="text" id="acSub" placeholder="例：東京芸大・ピアノ科">
+    </div>
+    <div class="field-group">
+      <label class="field-label">自意識の型</label>
+      <input type="text" id="acType" placeholder="例：矢野の自意識">
+    </div>
+    <div class="field-group">
+      <label class="field-label">テーマカラー</label>
+      <div style="display:flex;gap:8px;flex-wrap:wrap" id="acColorPicker">
+        <button class="color-pick" data-c="#e8eef8" data-t="#2e4a7a" style="background:#e8eef8;border:2px solid #2e4a7a" onclick="pickColor(this)">青</button>
+        <button class="color-pick" data-c="#fdf5e6" data-t="#a07840" style="background:#fdf5e6;border:2px solid #a07840" onclick="pickColor(this)">金</button>
+        <button class="color-pick" data-c="#e6f2ed" data-t="#3d6b5a" style="background:#e6f2ed;border:2px solid #3d6b5a" onclick="pickColor(this)">緑</button>
+        <button class="color-pick" data-c="#f5ede6" data-t="#7a4f2e" style="background:#f5ede6;border:2px solid #7a4f2e" onclick="pickColor(this)">茶</button>
+        <button class="color-pick" data-c="#eeecea" data-t="#4a443d" style="background:#eeecea;border:2px solid #4a443d" onclick="pickColor(this)">墨</button>
+        <button class="color-pick" data-c="#f0e6f5" data-t="#6a3d8a" style="background:#f0e6f5;border:2px solid #6a3d8a" onclick="pickColor(this)">紫</button>
+      </div>
+    </div>
+    <div class="field-group">
+      <label class="field-label">説明文</label>
+      <textarea id="acBody" rows="4" placeholder="この人物についての説明..."></textarea>
+    </div>
+    <div class="btn-row">
+      <button class="save-btn" onclick="saveNewChar()">追加</button>
+      <button class="cancel-btn" onclick="closeAddChar()">キャンセル</button>
+    </div>
+  </div>
+</div>
+
 <!-- トースト -->
 <div class="toast" id="toast"></div>
 
@@ -495,6 +559,8 @@ function toggleEdit(){
   document.querySelectorAll('.edit-bar').forEach(b=>b.classList.toggle('on',editMode));
   document.getElementById('chartEditRow').style.display=editMode&&currentChartIdx!==null?'grid':'none';
   if(currentChar)renderCharDetail(currentChar);
+  document.getElementById('addCharBtn').style.display=editMode?'inline-block':'none';
+  renderExtraChars();
   toast(editMode?'編集モード ON':'編集モード OFF');
 }
 
@@ -799,6 +865,88 @@ function onImport(input){
 }
 
 
+
+// Extra characters
+let acSelectedColor = {bg:'#eeecea', text:'#4a443d'};
+
+function openAddChar(){
+  acSelectedColor={bg:'#eeecea',text:'#4a443d'};
+  document.querySelectorAll('.color-pick').forEach(b=>b.classList.remove('selected'));
+  ['acName','acEn','acSub','acType','acBody'].forEach(id=>{
+    const el=document.getElementById(id);
+    if(el)el.value='';
+  });
+  document.getElementById('addCharOverlay').classList.add('open');
+}
+
+function closeAddChar(e){
+  if(!e||e.target===document.getElementById('addCharOverlay'))
+    document.getElementById('addCharOverlay').classList.remove('open');
+}
+
+function pickColor(btn){
+  document.querySelectorAll('.color-pick').forEach(b=>b.classList.remove('selected'));
+  btn.classList.add('selected');
+  acSelectedColor={bg:btn.dataset.c, text:btn.dataset.t};
+}
+
+function saveNewChar(){
+  const name=document.getElementById('acName').value.trim();
+  if(!name){toast('名前を入力してください');return;}
+  const id='extra_'+Date.now();
+  const extraChars=LS.get('extraChars')||{};
+  extraChars[id]={
+    name,
+    en:document.getElementById('acEn').value.trim()||name,
+    sub:document.getElementById('acSub').value.trim()||'',
+    type:document.getElementById('acType').value.trim()||'',
+    typeColor:acSelectedColor.bg,
+    typeText:acSelectedColor.text,
+    body:document.getElementById('acBody').value.trim()||''
+  };
+  LS.set('extraChars',extraChars);
+  CHARS[id]=Object.assign({},extraChars[id]);
+  addHistory(`人物「${name}」を追加`);
+  closeAddChar();
+  renderExtraChars();
+  showChar(id);
+  toast(`「${name}」を追加しました`);
+}
+
+function deleteExtraChar(id){
+  const extraChars=LS.get('extraChars')||{};
+  const name=extraChars[id]?.name||'?';
+  if(!confirm(`「${name}」を削除しますか？`))return;
+  delete extraChars[id];
+  delete CHARS[id];
+  LS.set('extraChars',extraChars);
+  addHistory(`人物「${name}」を削除`);
+  renderExtraChars();
+  document.getElementById('charDetail').innerHTML=`<div class="detail-placeholder"><span style="font-size:28px;opacity:.3">人</span><span>人物をクリックすると詳細が表示されます</span></div>`;
+  toast('削除しました');
+}
+
+function renderExtraChars(){
+  const extraChars=LS.get('extraChars')||{};
+  // CHARSにも反映
+  Object.entries(extraChars).forEach(([id,c])=>{CHARS[id]=c;});
+  const keys=Object.keys(extraChars);
+  const area=document.getElementById('extraCharsArea');
+  const grid=document.getElementById('extraCharsGrid');
+  if(!area||!grid)return;
+  if(keys.length===0){area.style.display='none';return;}
+  area.style.display='block';
+  grid.innerHTML=keys.map(id=>{
+    const c=extraChars[id];
+    return `<div class="extra-char-card" onclick="showChar('${id}')">
+      ${editMode?`<button class="extra-char-del" onclick="event.stopPropagation();deleteExtraChar('${id}')">×</button>`:''}
+      <div style="font-size:12px;font-weight:500;font-family:var(--serif);color:var(--ink)">${c.name}</div>
+      <div style="font-size:10px;font-family:var(--sans);color:var(--ink3);margin-top:2px">${c.sub||''}</div>
+      ${c.type?`<span style="display:inline-block;font-family:var(--sans);font-size:9px;padding:2px 8px;border-radius:8px;margin-top:4px;background:${c.typeColor};color:${c.typeText}">${c.type}</span>`:''}
+    </div>`;
+  }).join('');
+}
+
 // Writing
 let curWriteIdx=null,writeTimer=null;
 
@@ -860,6 +1008,7 @@ function toast(msg){
 }
 
 // Init
+renderExtraChars();
 document.addEventListener('keydown',e=>{if(e.key==='Escape')closeChModal();});
 renderChapters();
 
@@ -868,4 +1017,3 @@ document.querySelectorAll('.edit-bar').forEach(b=>b.style.display='none');
 </script>
 </body>
 </html>
-
