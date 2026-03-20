@@ -435,7 +435,7 @@ label.field-label{display:block;font-family:var(--sans);font-size:11px;color:var
     </div>
 
     <div id="gistCreatedWrap" style="display:none;padding:10px;background:var(--bg);border:1px solid var(--border);border-radius:6px;margin-bottom:12px">
-      <div style="font-family:var(--sans);font-size:11px;color:var(--ink3);margin-bottom:4px">作成されたGist ID（他端末で使用）</div>
+      <div style="font-family:var(--sans);font-size:11px;font-weight:500;color:var(--accent);margin-bottom:6px">Gist ID — 他の端末でこのIDを入力してください</div>
       <div style="display:flex;gap:8px;align-items:center">
         <span id="gistCreatedId" style="font-family:monospace;font-size:12px;color:var(--ink);flex:1;word-break:break-all"></span>
         <button onclick="copyGistId()" style="font-family:var(--sans);font-size:11px;padding:4px 10px;border:1px solid var(--border);border-radius:5px;background:var(--bg2);cursor:pointer;color:var(--ink3)">コピー</button>
@@ -1306,8 +1306,14 @@ function openSyncModal(){
   const gid   = localStorage.getItem('nm_gist_id')||'';
   document.getElementById('gistToken').value = token;
   document.getElementById('gistId').value = gid;
-  document.getElementById('gistCreatedWrap').style.display = 'none';
   document.getElementById('syncStatus').textContent = '';
+  // 既存のGist IDがあれば表示
+  if(gid){
+    document.getElementById('gistCreatedId').textContent = gid;
+    document.getElementById('gistCreatedWrap').style.display = 'block';
+  } else {
+    document.getElementById('gistCreatedWrap').style.display = 'none';
+  }
   document.getElementById('syncOverlay').classList.add('open');
 }
 
@@ -1365,7 +1371,8 @@ async function setupGist(){
       localStorage.setItem('nm_gist_id', id);
       document.getElementById('gistCreatedId').textContent = id;
       document.getElementById('gistCreatedWrap').style.display = 'block';
-      setSyncStatus('✓ Gistを作成しました。IDを他端末で使用してください');
+      document.getElementById('gistId').value = id;
+      setSyncStatus('✓ Gistを作成しました。下のIDを他端末で使用してください');
       updateGistBadge();
       toast('☁ Gistを作成しました');
     } else {
@@ -1385,9 +1392,16 @@ async function createGist(){
       headers:{'Authorization':`Bearer ${token}`,'Content-Type':'application/json'},
       body: JSON.stringify({description:'中目黒 小説設計図データ', public:false, files:{[GIST_FILENAME]:{content:JSON.stringify(data)}}})
     });
-    if(!res.ok) return null;
+    if(!res.ok){
+      const err = await res.json().catch(()=>({}));
+      setSyncStatus(`エラー: ${res.status} ${err.message||''}`, true);
+      return null;
+    }
     return (await res.json()).id;
-  }catch(e){ return null; }
+  }catch(e){
+    setSyncStatus(`通信エラー: ${e.message}`, true);
+    return null;
+  }
 }
 
 async function pushToGist(){
