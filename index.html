@@ -240,20 +240,8 @@ label.field-label{display:block;font-family:var(--sans);font-size:11px;color:var
             <path d="M2 1L8 5L2 9" fill="none" stroke="context-stroke" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
           </marker>
         </defs>
-        <!-- 矢印ライン（固定） -->
-        <line x1="230" y1="100" x2="252" y2="195" stroke="#2e4a7a" stroke-width="1.4" marker-end="url(#arr)" opacity=".8"/>
-        <text x="210" y="150" text-anchor="middle" font-size="9.5" font-family="'Noto Sans JP',sans-serif" fill="#2e4a7a">憧れ→醒め</text>
-        <line x1="278" y1="250" x2="200" y2="310" stroke="#3d6b5a" stroke-width="1.4" marker-end="url(#arr)" opacity=".8"/>
-        <text x="208" y="288" text-anchor="middle" font-size="9.5" font-family="'Noto Sans JP',sans-serif" fill="#3d6b5a">気づき（遅）</text>
-        <path d="M230,84 C330,18 465,18 496,168" fill="none" stroke="#a07840" stroke-width="1.2" stroke-dasharray="5 3.5" marker-end="url(#arr)" opacity=".75"/>
-        <text x="360" y="20" text-anchor="middle" font-size="9.5" font-family="'Noto Sans JP',sans-serif" fill="#a07840">資本・依存</text>
-        <line x1="446" y1="332" x2="212" y2="348" stroke="#7a4f2e" stroke-width="1.2" stroke-dasharray="4 3" marker-end="url(#arr)" opacity=".7"/>
-        <text x="330" y="328" text-anchor="middle" font-size="9.5" font-family="'Noto Sans JP',sans-serif" fill="#7a4f2e">無自覚な好意</text>
-        <line x1="510" y1="90" x2="420" y2="178" stroke="#4a443d" stroke-width="1.1" stroke-dasharray="4 3" marker-end="url(#arr)" opacity=".65"/>
-        <text x="490" y="122" text-anchor="middle" font-size="9.5" font-family="'Noto Sans JP',sans-serif" fill="#4a443d">照射する存在</text>
-        <line x1="422" y1="216" x2="446" y2="310" stroke="#8a807a" stroke-width="1" stroke-dasharray="3 3" opacity=".55" marker-end="url(#arr)"/>
-        <text x="450" y="264" text-anchor="start" font-size="9.5" font-family="'Noto Sans JP',sans-serif" fill="#8a807a" opacity=".8">友人</text>
-        <!-- ノードはJSで描画 -->
+        <!-- 矢印・ノードはJSで描画 -->
+        <g id="svgArrows"></g>
         <g id="svgNodes"></g>
       </svg>
     </div>
@@ -272,6 +260,7 @@ label.field-label{display:block;font-family:var(--sans);font-size:11px;color:var
   <!-- 追加ボタン（常に表示） -->
   <div style="margin-top:14px">
     <button class="hbtn" onclick="openAddChar()">＋ 人物を追加</button>
+    <button class="hbtn" onclick="openArrowModal()" style="margin-left:6px">矢印を編集</button>
   </div>
 </div>
 
@@ -282,28 +271,30 @@ label.field-label{display:block;font-family:var(--sans);font-size:11px;color:var
     <div class="legend-item"><svg class="legend-svg" viewBox="0 0 28 12"><line x1="0" y1="6" x2="28" y2="6" stroke="#2e4a7a" stroke-width="2"/><circle cx="14" cy="6" r="3" fill="#2e4a7a"/></svg>敬太郎</div>
     <div class="legend-item"><svg class="legend-svg" viewBox="0 0 28 12"><line x1="0" y1="6" x2="28" y2="6" stroke="#a07840" stroke-width="2" stroke-dasharray="5 3"/><circle cx="14" cy="6" r="3" fill="#a07840"/></svg>摩耶（破線）</div>
     <div class="legend-item"><svg class="legend-svg" viewBox="0 0 28 12"><line x1="0" y1="6" x2="28" y2="6" stroke="#3d6b5a" stroke-width="2" stroke-dasharray="2 3"/><circle cx="14" cy="6" r="3" fill="#3d6b5a"/></svg>莉子（点線）</div>
+    <span id="chartLegendExtras" style="display:contents"></span>
     <span style="margin-left:auto;font-family:var(--sans);font-size:11px;color:var(--ink3)">プロット点クリックで章情報・編集</span>
   </div>
   <div class="chart-wrap"><canvas id="consChart" height="280"></canvas></div>
   <div class="chart-info" id="chartInfo">グラフのプロット点をクリックすると章の概要が表示されます</div>
-  <div id="chartEditRow" class="chart-edit-row" style="display:none;margin-top:12px;background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:12px 16px">
-    <div style="font-family:var(--sans);font-size:12px;color:var(--ink2)" id="chartEditLabel">—</div>
-    <div style="display:flex;gap:8px;align-items:center">
-      <span style="font-family:var(--sans);font-size:11px;color:var(--ink3)">敬太郎</span>
+  <div id="chartEditRow" style="display:none;margin-top:12px;background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:12px 16px">
+    <div style="font-family:var(--sans);font-size:12px;color:var(--ink2);margin-bottom:10px" id="chartEditLabel">—</div>
+    <div style="display:flex;gap:8px;align-items:center;margin-top:6px">
+      <span style="font-family:var(--sans);font-size:11px;color:var(--ink3);min-width:60px">敬太郎</span>
       <input type="range" id="sliderK" min="0" max="6" step="0.5" value="3" style="flex:1" oninput="previewSlider('k',this.value)">
       <span style="font-family:var(--sans);font-size:11px;min-width:24px" id="valK">3</span>
     </div>
-    <div style="display:flex;gap:8px;align-items:center">
-      <span style="font-family:var(--sans);font-size:11px;color:var(--ink3)">摩耶</span>
+    <div style="display:flex;gap:8px;align-items:center;margin-top:6px">
+      <span style="font-family:var(--sans);font-size:11px;color:var(--ink3);min-width:60px">摩耶</span>
       <input type="range" id="sliderM" min="0" max="6" step="0.5" value="3" style="flex:1" oninput="previewSlider('m',this.value)">
       <span style="font-family:var(--sans);font-size:11px;min-width:24px" id="valM">3</span>
     </div>
-    <div style="display:flex;gap:8px;align-items:center">
-      <span style="font-family:var(--sans);font-size:11px;color:var(--ink3)">莉子</span>
+    <div style="display:flex;gap:8px;align-items:center;margin-top:6px">
+      <span style="font-family:var(--sans);font-size:11px;color:var(--ink3);min-width:60px">莉子</span>
       <input type="range" id="sliderR" min="0" max="6" step="0.5" value="3" style="flex:1" oninput="previewSlider('r',this.value)">
       <span style="font-family:var(--sans);font-size:11px;min-width:24px" id="valR">3</span>
     </div>
-    <button class="save-btn" onclick="saveChartValues()" style="white-space:nowrap">保存</button>
+    <div id="chartExtraSliders"></div>
+    <div style="margin-top:10px"><button class="save-btn" onclick="saveChartValues()" style="white-space:nowrap">保存</button></div>
   </div>
 </div>
 
@@ -417,6 +408,66 @@ label.field-label{display:block;font-family:var(--sans);font-size:11px;color:var
   </div>
 </div>
 
+
+<!-- 矢印編集モーダル -->
+<div class="overlay" id="arrowOverlay" onclick="closeArrowModal(event)">
+  <div class="modal" style="max-width:560px">
+    <button class="modal-close" onclick="closeArrowModal()">×</button>
+    <h2>矢印を編集</h2>
+    <div class="modal-sub">矢印の追加・編集・削除ができます</div>
+    <!-- 矢印一覧 -->
+    <div id="arrowList" style="margin-bottom:16px;max-height:200px;overflow-y:auto"></div>
+    <!-- 矢印追加フォーム -->
+    <div style="background:var(--bg2);border-radius:8px;padding:14px;border:1px dashed var(--border2)">
+      <div style="font-family:var(--sans);font-size:11px;font-weight:500;color:var(--ink2);margin-bottom:10px">新しい矢印を追加</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+        <div class="field-group">
+          <label class="field-label">始点X</label>
+          <input type="number" id="arX1" placeholder="例: 230" style="width:100%">
+        </div>
+        <div class="field-group">
+          <label class="field-label">始点Y</label>
+          <input type="number" id="arY1" placeholder="例: 100" style="width:100%">
+        </div>
+        <div class="field-group">
+          <label class="field-label">終点X</label>
+          <input type="number" id="arX2" placeholder="例: 252" style="width:100%">
+        </div>
+        <div class="field-group">
+          <label class="field-label">終点Y</label>
+          <input type="number" id="arY2" placeholder="例: 195" style="width:100%">
+        </div>
+      </div>
+      <div class="field-group">
+        <label class="field-label">ラベル</label>
+        <input type="text" id="arLabel" placeholder="例: 憧れ→醒め">
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+        <div class="field-group">
+          <label class="field-label">ラベルX</label>
+          <input type="number" id="arLx" placeholder="例: 210">
+        </div>
+        <div class="field-group">
+          <label class="field-label">ラベルY</label>
+          <input type="number" id="arLy" placeholder="例: 150">
+        </div>
+      </div>
+      <div style="display:flex;gap:16px;align-items:center;margin-bottom:10px">
+        <label style="display:flex;align-items:center;gap:6px;font-family:var(--sans);font-size:12px;color:var(--ink2);cursor:pointer">
+          <input type="checkbox" id="arDashed"> 破線
+        </label>
+        <div style="display:flex;align-items:center;gap:8px">
+          <label class="field-label" style="margin:0">色</label>
+          <input type="color" id="arColor" value="#2e4a7a" style="width:36px;height:28px;border:1px solid var(--border);border-radius:4px;padding:2px;cursor:pointer">
+        </div>
+      </div>
+      <button class="save-btn" onclick="addArrow()">矢印を追加</button>
+    </div>
+    <div style="font-family:var(--sans);font-size:11px;color:var(--ink3);margin-top:10px;line-height:1.7">
+      ヒント：SVG座標はviewBox="0 0 660 430"基準。ノード位置の中心を目安にどうぞ。
+    </div>
+  </div>
+</div>
 
 <!-- 人物追加モーダル -->
 <div class="overlay" id="addCharOverlay" onclick="closeAddChar(event)">
@@ -645,20 +696,41 @@ function saveCharAll(id){
 
 // Chart
 let chartInited=false;
+
+function buildDatasets(){
+  const base=[
+    {label:'敬太郎',data:[...chartData.k],borderColor:'#2e4a7a',backgroundColor:'rgba(46,74,122,0.06)',pointBackgroundColor:'#2e4a7a',pointRadius:5,pointHoverRadius:7,tension:.35,spanGaps:false,borderWidth:2.5,_key:'k'},
+    {label:'摩耶',data:[...chartData.m],borderColor:'#a07840',backgroundColor:'rgba(160,120,64,0.06)',pointBackgroundColor:'#a07840',pointRadius:5,pointHoverRadius:7,tension:.35,spanGaps:false,borderDash:[7,4],borderWidth:2,_key:'m'},
+    {label:'莉子',data:[...chartData.r],borderColor:'#3d6b5a',backgroundColor:'rgba(61,107,90,0.06)',pointBackgroundColor:'#3d6b5a',pointRadius:5,pointHoverRadius:7,tension:.35,spanGaps:false,borderDash:[2,4],borderWidth:2,_key:'r'},
+  ];
+  // 追加人物のチャートデータ
+  const ec=LS.get('extraChars')||{};
+  const ecd=LS.get('extraCharData')||{};
+  Object.entries(ec).forEach(([id,c])=>{
+    const d=ecd[id]||Array(24).fill(null);
+    base.push({label:c.name,data:[...d],borderColor:c.typeText||'#888',backgroundColor:'transparent',pointBackgroundColor:c.typeText||'#888',pointRadius:4,pointHoverRadius:6,tension:.35,spanGaps:false,borderDash:[3,3],borderWidth:1.5,_key:id,_extra:true});
+  });
+  return base;
+}
+
+function renderChartLegend(){
+  const ec=LS.get('extraChars')||{};
+  const extras=Object.entries(ec).map(([id,c])=>`
+    <div class="legend-item">
+      <svg class="legend-svg" viewBox="0 0 28 12"><line x1="0" y1="6" x2="28" y2="6" stroke="${c.typeText||'#888'}" stroke-width="1.5" stroke-dasharray="3 3"/><circle cx="14" cy="6" r="3" fill="${c.typeText||'#888'}"/></svg>
+      ${c.name}
+    </div>`).join('');
+  const el=document.getElementById('chartLegendExtras');
+  if(el) el.innerHTML=extras;
+}
+
 function initChart(){
-  if(chartInited)return;
+  if(chartInited){ rebuildChart(); return; }
   chartInited=true;
   const ctx=document.getElementById('consChart').getContext('2d');
   chartInstance=new Chart(ctx,{
     type:'line',
-    data:{
-      labels:Array.from({length:24},(_,i)=>i+1),
-      datasets:[
-        {label:'敬太郎',data:chartData.k,borderColor:'#2e4a7a',backgroundColor:'rgba(46,74,122,0.06)',pointBackgroundColor:'#2e4a7a',pointRadius:5,pointHoverRadius:7,tension:.35,spanGaps:false,borderWidth:2.5},
-        {label:'摩耶',data:chartData.m,borderColor:'#a07840',backgroundColor:'rgba(160,120,64,0.06)',pointBackgroundColor:'#a07840',pointRadius:5,pointHoverRadius:7,tension:.35,spanGaps:false,borderDash:[7,4],borderWidth:2},
-        {label:'莉子',data:chartData.r,borderColor:'#3d6b5a',backgroundColor:'rgba(61,107,90,0.06)',pointBackgroundColor:'#3d6b5a',pointRadius:5,pointHoverRadius:7,tension:.35,spanGaps:false,borderDash:[2,4],borderWidth:2},
-      ]
-    },
+    data:{labels:Array.from({length:24},(_,i)=>i+1), datasets:buildDatasets()},
     options:{
       responsive:true,
       onClick:(_,els)=>{
@@ -667,16 +739,7 @@ function initChart(){
         currentChartIdx=idx;
         const ch=CHAPTERS[idx];
         document.getElementById('chartInfo').innerHTML=`<div class="ch-title-s">第${ch.n}章　${ch.key}</div><div class="ch-pre-s">${ch.pre}</div>${ch.body}`;
-        if(editMode){
-          document.getElementById('chartEditRow').style.display='grid';
-          document.getElementById('chartEditLabel').textContent=`第${idx+1}章の値を編集`;
-          const vk=chartData.k[idx]??0;
-          const vm=chartData.m[idx]??0;
-          const vr=chartData.r[idx]??0;
-          document.getElementById('sliderK').value=vk;document.getElementById('valK').textContent=vk;
-          document.getElementById('sliderM').value=vm;document.getElementById('valM').textContent=vm;
-          document.getElementById('sliderR').value=vr;document.getElementById('valR').textContent=vr;
-        }
+        if(editMode) showChartEditPanel(idx);
       },
       plugins:{legend:{display:false},tooltip:{callbacks:{title:i=>`第${i[0].label}章`}}},
       scales:{
@@ -685,10 +748,45 @@ function initChart(){
       }
     }
   });
+  renderChartLegend();
+}
+
+function rebuildChart(){
+  if(!chartInstance) return;
+  chartInstance.data.datasets=buildDatasets();
+  chartInstance.update('none');
+  renderChartLegend();
+}
+
+function showChartEditPanel(idx){
+  const ec=LS.get('extraChars')||{};
+  const ecd=LS.get('extraCharData')||{};
+  const extraSliders=Object.entries(ec).map(([id,c])=>{
+    const v=ecd[id]?.[idx]??0;
+    return `<div style="display:flex;gap:8px;align-items:center;margin-top:6px">
+      <span style="font-family:var(--sans);font-size:11px;color:var(--ink3);min-width:60px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${c.name}</span>
+      <input type="range" id="slider_${id}" min="0" max="6" step="0.5" value="${v}" style="flex:1" oninput="previewExtraSlider('${id}',this.value)">
+      <span style="font-family:var(--sans);font-size:11px;min-width:24px" id="val_${id}">${v}</span>
+    </div>`;
+  }).join('');
+
+  document.getElementById('chartEditRow').style.display='block';
+  document.getElementById('chartEditLabel').textContent=`第${idx+1}章の値を編集`;
+  const vk=chartData.k[idx]??0,vm=chartData.m[idx]??0,vr=chartData.r[idx]??0;
+  document.getElementById('sliderK').value=vk;document.getElementById('valK').textContent=vk;
+  document.getElementById('sliderM').value=vm;document.getElementById('valM').textContent=vm;
+  document.getElementById('sliderR').value=vr;document.getElementById('valR').textContent=vr;
+  const extra=document.getElementById('chartExtraSliders');
+  if(extra) extra.innerHTML=extraSliders;
 }
 
 function previewSlider(c,v){
   document.getElementById('val'+c.toUpperCase()).textContent=v;
+}
+
+function previewExtraSlider(id,v){
+  const el=document.getElementById('val_'+id);
+  if(el) el.textContent=v;
 }
 
 function saveChartValues(){
@@ -700,11 +798,18 @@ function saveChartValues(){
   chartData.m[currentChartIdx]=vm;
   chartData.r[currentChartIdx]=vr;
   LS.set('chart',chartData);
-  chartInstance.data.datasets[0].data[currentChartIdx]=vk;
-  chartInstance.data.datasets[1].data[currentChartIdx]=vm;
-  chartInstance.data.datasets[2].data[currentChartIdx]=vr;
-  chartInstance.update('none');
-  addHistory(`第${currentChartIdx+1}章の自意識グラフ値を更新（敬太郎:${vk} 摩耶:${vm} 莉子:${vr}）`);
+  // 追加人物の値も保存
+  const ec=LS.get('extraChars')||{};
+  const ecd=LS.get('extraCharData')||{};
+  Object.keys(ec).forEach(id=>{
+    const el=document.getElementById('slider_'+id);
+    if(!el) return;
+    if(!ecd[id]) ecd[id]=Array(24).fill(null);
+    ecd[id][currentChartIdx]=parseFloat(el.value);
+  });
+  LS.set('extraCharData',ecd);
+  rebuildChart();
+  addHistory(`第${currentChartIdx+1}章の自意識グラフ値を更新`);
   toast('グラフ値を保存しました');
 }
 
@@ -894,6 +999,117 @@ function onImport(input){
 
 
 
+
+// Arrows default data
+const ARROWS_DEFAULT = [
+  {id:'a1',x1:230,y1:100,x2:252,y2:195,label:'憧れ→醒め',color:'#2e4a7a',lx:210,ly:150,dashed:false},
+  {id:'a2',x1:278,y1:250,x2:200,y2:310,label:'気づき（遅）',color:'#3d6b5a',lx:208,ly:288,dashed:false},
+  {id:'a3',x1:230,y1:84,x2:496,y2:168,label:'資本・依存',color:'#a07840',lx:360,ly:20,dashed:true,curve:true,cpx:330,cpy:18,cpx2:465,cpy2:18},
+  {id:'a4',x1:446,y1:332,x2:212,y2:348,label:'無自覚な好意',color:'#7a4f2e',lx:330,ly:328,dashed:true},
+  {id:'a5',x1:510,y1:90,x2:420,y2:178,label:'照射する存在',color:'#4a443d',lx:490,ly:122,dashed:true},
+  {id:'a6',x1:422,y1:216,x2:446,y2:310,label:'友人',color:'#8a807a',lx:450,ly:264,dashed:true},
+];
+
+// Arrows
+function getArrows(){
+  const saved=LS.get('arrows');
+  if(saved && saved.length) return saved;
+  return JSON.parse(JSON.stringify(ARROWS_DEFAULT));
+}
+
+function renderArrows(){
+  const g=document.getElementById('svgArrows');
+  if(!g) return;
+  const arrows=getArrows();
+  g.innerHTML=arrows.map(a=>{
+    const dash=a.dashed?'stroke-dasharray="5 3.5"':'';
+    const line=a.curve
+      ? `<path d="M${a.x1},${a.y1} C${a.cpx||a.x1},${a.cpy||a.y1} ${a.cpx2||a.x2},${a.cpy2||a.y2} ${a.x2},${a.y2}" fill="none" stroke="${a.color}" stroke-width="1.3" ${dash} marker-end="url(#arr)" opacity=".8"/>`
+      : `<line x1="${a.x1}" y1="${a.y1}" x2="${a.x2}" y2="${a.y2}" stroke="${a.color}" stroke-width="1.3" ${dash} marker-end="url(#arr)" opacity=".8"/>`;
+    const label=a.label?`<text x="${a.lx||((a.x1+a.x2)/2)}" y="${a.ly||((a.y1+a.y2)/2)}" text-anchor="middle" font-size="9.5" font-family="'Noto Sans JP',sans-serif" fill="${a.color}">${a.label}</text>`:'';
+    return line+label;
+  }).join('');
+}
+
+function openArrowModal(){
+  renderArrowList();
+  // フォームリセット
+  ['arX1','arY1','arX2','arY2','arLabel','arLx','arLy'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
+  document.getElementById('arDashed').checked=false;
+  document.getElementById('arColor').value='#2e4a7a';
+  document.getElementById('arrowOverlay').classList.add('open');
+}
+
+function closeArrowModal(e){
+  if(!e||e.target===document.getElementById('arrowOverlay'))
+    document.getElementById('arrowOverlay').classList.remove('open');
+}
+
+function renderArrowList(){
+  const arrows=getArrows();
+  const el=document.getElementById('arrowList');
+  if(!el) return;
+  if(!arrows.length){el.innerHTML='<div style="font-family:var(--sans);font-size:12px;color:var(--ink3);padding:8px">矢印がありません</div>';return;}
+  el.innerHTML=arrows.map((a,i)=>`
+    <div style="display:flex;align-items:center;gap:8px;padding:8px 0;border-bottom:.5px solid var(--border)">
+      <div style="width:16px;height:3px;background:${a.color};border-radius:2px;flex-shrink:0;${a.dashed?'background:repeating-linear-gradient(90deg,'+a.color+' 0,'+a.color+' 4px,transparent 4px,transparent 7px)':''}"></div>
+      <div style="flex:1;font-family:var(--sans);font-size:12px;color:var(--ink2)">${a.label||'（ラベルなし）'}</div>
+      <button onclick="editArrowInline(${i})" style="font-family:var(--sans);font-size:10px;padding:3px 10px;border:1px solid var(--border);border-radius:5px;background:var(--bg);cursor:pointer;color:var(--ink3)">編集</button>
+      <button onclick="deleteArrow('${a.id}')" style="font-family:var(--sans);font-size:10px;padding:3px 10px;border:1px solid #fca5a5;border-radius:5px;background:#fff1f2;cursor:pointer;color:#c0392b">削除</button>
+    </div>`).join('');
+}
+
+function editArrowInline(i){
+  const arrows=getArrows();
+  const a=arrows[i];
+  document.getElementById('arX1').value=a.x1;
+  document.getElementById('arY1').value=a.y1;
+  document.getElementById('arX2').value=a.x2;
+  document.getElementById('arY2').value=a.y2;
+  document.getElementById('arLabel').value=a.label||'';
+  document.getElementById('arLx').value=a.lx||'';
+  document.getElementById('arLy').value=a.ly||'';
+  document.getElementById('arDashed').checked=!!a.dashed;
+  document.getElementById('arColor').value=a.color||'#2e4a7a';
+  // 編集時は古いものを削除してから追加
+  deleteArrow(a.id, true);
+}
+
+function addArrow(){
+  const arrows=getArrows();
+  const x1=parseFloat(document.getElementById('arX1').value);
+  const y1=parseFloat(document.getElementById('arY1').value);
+  const x2=parseFloat(document.getElementById('arX2').value);
+  const y2=parseFloat(document.getElementById('arY2').value);
+  if(isNaN(x1)||isNaN(y1)||isNaN(x2)||isNaN(y2)){toast('座標を入力してください');return;}
+  const label=document.getElementById('arLabel').value.trim();
+  const lx=parseFloat(document.getElementById('arLx').value)||((x1+x2)/2);
+  const ly=parseFloat(document.getElementById('arLy').value)||((y1+y2)/2);
+  const dashed=document.getElementById('arDashed').checked;
+  const color=document.getElementById('arColor').value;
+  arrows.push({id:'a_'+Date.now(),x1,y1,x2,y2,label,lx,ly,dashed,color});
+  LS.set('arrows',arrows);
+  renderArrows();
+  renderArrowList();
+  addHistory(`矢印「${label||'新規'}」を追加`);
+  toast('矢印を追加しました');
+}
+
+function deleteArrow(id, silent=false){
+  const arrows=getArrows().filter(a=>a.id!==id);
+  LS.set('arrows',arrows);
+  renderArrows();
+  renderArrowList();
+  if(!silent){addHistory('矢印を削除');toast('削除しました');}
+}
+
+function resetArrows(){
+  if(!confirm('矢印をデフォルトに戻しますか？'))return;
+  LS.set('arrows', JSON.parse(JSON.stringify(ARROWS_DEFAULT)));
+  renderArrows();
+  toast('リセットしました');
+}
+
 // Extra characters
 let acSelColor = {bg:'#eeecea', text:'#4a443d'};
 
@@ -936,6 +1152,7 @@ function saveNewChar(){
   closeAddChar();
   renderExtraChars();
   showChar(id);
+  if(chartInited) rebuildChart();
   toast(`「${name}」を追加しました`);
 }
 
@@ -947,6 +1164,7 @@ function deleteExtraChar(id){
   LS.set('extraChars',ec);
   addHistory(`人物「${name}」を削除`);
   renderExtraChars();
+  if(chartInited) rebuildChart();
   document.getElementById('charDetail').innerHTML='<div class="detail-placeholder"><span>人物をクリックすると詳細が表示されます</span></div>';
   toast('削除しました');
 }
@@ -1031,6 +1249,7 @@ function toast(msg){
 }
 
 // Init
+renderArrows();
 renderSvgNodes();
 renderExtraChars();
 document.addEventListener('keydown',e=>{if(e.key==='Escape')closeChModal();});
