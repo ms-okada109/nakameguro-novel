@@ -1387,8 +1387,8 @@ async function setupGist(){
       if(chartInited) rebuildChart();
       document.getElementById('gistCreatedId').textContent = existingId;
       document.getElementById('gistCreatedWrap').style.display = 'block';
-      setTimeout(()=>{ btn.textContent='接続する'; btn.disabled=false; closeSyncModal(); }, 800);
-      toast('☁ Gistから同期しました');
+      toast('☁ Gistから同期しました。再読み込みします...');
+      setTimeout(()=>{ location.reload(); }, 1200);
       return;
     } else {
       setSyncStatus('Gist IDが見つかりません。IDを確認してください', true);
@@ -1501,21 +1501,8 @@ function toast(msg){
 
 // Init
 // Gist設定復元
-// 起動時にGistから自動プル
+// Gistバッジ更新（起動時の自動プルは削除、手動同期のみ）
 updateGistBadge();
-(async()=>{
-  const token=localStorage.getItem('nm_gist_token');
-  const gid=localStorage.getItem('nm_gist_id');
-  if(token&&gid){
-    const ok=await pullFromGist();
-    if(ok){
-      renderChapters();renderMemos();
-      renderArrows();renderSvgNodes();renderExtraChars();
-      if(chartInited)rebuildChart();
-      toast('☁ Gistから最新データを読み込みました');
-    }
-  }
-})();
 renderArrows();
 renderSvgNodes();
 renderExtraChars();
